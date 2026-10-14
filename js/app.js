@@ -14,11 +14,39 @@ import { kayitAra } from './arama.js';
 import { disaAktar, iceAktar, csvDisaAktar, csvIceAktar } from './yedek.js';
 
 // ===== EKRAN YÖNETİMİ =====
-// Tüm ekranları gizleyip sadece istenen ekranı gösterir
-function ekranGoster(ekranId) {
+// Ekran geçmişi: telefonun geri tuşuyla önceki ekrana dönmek için
+let ekranGecmisi = ['ekran-liste'];
+
+function ekranGoster(ekranId, geriMi = false) {
   document.querySelectorAll('.ekran').forEach(el => el.classList.remove('aktif'));
   document.getElementById(ekranId).classList.add('aktif');
   window.scrollTo(0, 0);
+
+  if (!geriMi) {
+    if (ekranGecmisi[ekranGecmisi.length - 1] !== ekranId) {
+      ekranGecmisi.push(ekranId);
+      history.pushState({ ekran: ekranId }, '');
+    }
+  }
+
+  // Alt bar aktif butonu güncelle
+  altBarGuncelle(ekranId);
+}
+
+// Telefonun geri tuşunu yakala
+window.addEventListener('popstate', () => {
+  if (ekranGecmisi.length > 1) {
+    ekranGecmisi.pop();
+    const oncekiEkran = ekranGecmisi[ekranGecmisi.length - 1];
+    ekranGoster(oncekiEkran, true);
+  }
+});
+
+// Alt navigasyon barını güncelle
+function altBarGuncelle(ekranId) {
+  document.querySelectorAll('.alt-bar-btn').forEach(btn => {
+    btn.classList.toggle('aktif', btn.dataset.ekran === ekranId);
+  });
 }
 
 // ===== SAYFA DURUMU =====
@@ -38,6 +66,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   await listeYenile();
   aramaGecmisiniGoster();
   olaylariKur();
+  // İlk ekran için history state ayarla
+  history.replaceState({ ekran: 'ekran-liste' }, '');
 });
 
 // Kategori <select> alanını doldur
@@ -56,37 +86,76 @@ async function kategorileriDoldur() {
 }
 
 // ===== KATEGORİ ÇİPLERİ =====
+let filtrelerAcik = false;
+
 async function kategoriCipleriniOlustur() {
   const kategoriler = await kategorileriYukle();
   const wrap = document.getElementById('kategori-cipler');
   wrap.innerHTML = '';
 
-  // "Tümü" çipi
+  // "Filtrele" aç/kapa butonu
+  const filtreBtn = document.createElement('button');
+  filtreBtn.type = 'button';
+  filtreBtn.className = 'cip filtre-toggle';
+  filtreBtn.textContent = '⚙ Filtrele';
+  filtreBtn.addEventListener('click', () => {
+    filtrelerAcik = !filtrelerAcik;
+    cipGizle(filtrelerAcik);
+    filtreBtn.textContent = filtrelerAcik ? '✕ Kapat' : '⚙ Filtrele';
+  });
+  wrap.appendChild(filtreBtn);
+
+  // Seçili kategori göstergesi
+  if (seciliKategori) {
+    const aktifCip = document.createElement('button');
+    aktifCip.type = 'button';
+    aktifCip.className = 'cip secili';
+    aktifCip.textContent = seciliKategori + ' ✕';
+    aktifCip.addEventListener('click', () => {
+      seciliKategori = null;
+      kategoriCipleriniOlustur();
+      aramaYap();
+    });
+    wrap.appendChild(aktifCip);
+  }
+
+  // Gizlenebilir kategori listesi
+  const cipListesi = document.createElement('div');
+  cipListesi.className = 'cip-listesi';
+  cipListesi.style.display = filtrelerAcik ? '' : 'none';
+
   const tumBtn = document.createElement('button');
   tumBtn.type = 'button';
-  tumBtn.className = 'cip secili';
+  tumBtn.className = 'cip' + (!seciliKategori ? ' secili' : '');
   tumBtn.textContent = 'Tümü';
   tumBtn.addEventListener('click', () => {
     seciliKategori = null;
-    document.querySelectorAll('.cip').forEach(c => c.classList.remove('secili'));
-    tumBtn.classList.add('secili');
+    filtrelerAcik = false;
+    kategoriCipleriniOlustur();
     aramaYap();
   });
-  wrap.appendChild(tumBtn);
+  cipListesi.appendChild(tumBtn);
 
   kategoriler.forEach(kat => {
     const btn = document.createElement('button');
     btn.type = 'button';
-    btn.className = 'cip';
+    btn.className = 'cip' + (seciliKategori === kat ? ' secili' : '');
     btn.textContent = kat;
     btn.addEventListener('click', () => {
       seciliKategori = kat;
-      document.querySelectorAll('.cip').forEach(c => c.classList.remove('secili'));
-      btn.classList.add('secili');
+      filtrelerAcik = false;
+      kategoriCipleriniOlustur();
       aramaYap();
     });
-    wrap.appendChild(btn);
+    cipListesi.appendChild(btn);
   });
+
+  wrap.appendChild(cipListesi);
+}
+
+function cipGizle(goster) {
+  const liste = document.querySelector('.cip-listesi');
+  if (liste) liste.style.display = goster ? '' : 'none';
 }
 
 // ===== ARAMA =====
@@ -126,7 +195,7 @@ async function listeYenile() {
 
   const sonuc = await kayitlariListele(0);
   if (sonuc.kayitlar.length === 0) {
-    liste.innerHTML = '<p class="bos-mesaj">Henüz kayıt yok. Sağ alttaki + butonuyla ilk kaydını ekle.</p>';
+    liste.innerHTML = '<p class="bos-mesaj">Henüz kayıt yok. Alttaki "Yeni Kayıt" butonuyla ilk kaydını ekle.</p>';
     document.getElementById('daha-fazla-wrap').style.display = 'none';
     return;
   }
@@ -373,10 +442,18 @@ async function benzerleriGoster() {
 
 // ===== OLAY DİNLEYİCİLERİ =====
 function olaylariKur() {
-  // Yeni kayıt butonu
-  document.getElementById('btn-yeni').addEventListener('click', () => {
-    formuTemizle();
-    ekranGoster('ekran-form');
+  // Alt navigasyon barı
+  document.querySelectorAll('.alt-bar-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const hedef = btn.dataset.ekran;
+      if (hedef === 'ekran-form') {
+        formuTemizle();
+      } else if (hedef === 'ekran-istatistik') {
+        istatistikGoster();
+        return;
+      }
+      ekranGoster(hedef);
+    });
   });
 
   // Form gönder
@@ -433,15 +510,9 @@ function olaylariKur() {
   // Karanlık tema butonu
   document.getElementById('btn-tema').addEventListener('click', temaToggle);
 
-  // İstatistik ekranı
-  document.getElementById('btn-istatistik').addEventListener('click', istatistikGoster);
+  // İstatistik ve ayarlar geri butonları
   document.getElementById('btn-istatistik-geri').addEventListener('click', () => {
     ekranGoster('ekran-liste');
-  });
-
-  // Ayarlar ekranı
-  document.getElementById('btn-ayarlar').addEventListener('click', () => {
-    ekranGoster('ekran-ayarlar');
   });
   document.getElementById('btn-ayarlar-geri').addEventListener('click', () => {
     ekranGoster('ekran-liste');

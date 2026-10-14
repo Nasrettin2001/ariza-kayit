@@ -26,8 +26,6 @@
         <h1>Çözüm Defteri</h1>
         <p><small>Çözülen sorunları kaydet, kolayca bul</small></p>
       </div>
-      <button id="btn-istatistik" class="outline secondary btn-ayarlar" aria-label="İstatistik">&#9776;</button>
-      <button id="btn-ayarlar" class="outline secondary btn-ayarlar" aria-label="Ayarlar">&#9881;</button>
     </header>
 
     <input type="search" id="arama-kutusu" placeholder="Sorun ara... (ör: yazıcı soluk)">
@@ -38,14 +36,13 @@
     </div>
 
     <section id="kayit-listesi">
-      <p class="bos-mesaj">Henüz kayıt yok. Sağ alttaki + butonuyla ilk kaydını ekle.</p>
+      <p class="bos-mesaj">Henüz kayıt yok. Alttaki "Yeni Kayıt" butonuyla ilk kaydını ekle.</p>
     </section>
 
     <div id="daha-fazla-wrap" style="display:none; text-align:center; margin:1rem 0;">
       <button id="btn-daha-fazla" class="outline">Daha fazla yükle</button>
     </div>
 
-    <button id="btn-yeni" class="fab" aria-label="Yeni kayıt ekle">+</button>
   </main>
 
   <!-- ===== EKRAN 2: YENİ KAYIT / DÜZENLE ===== -->
@@ -220,6 +217,26 @@
       <div id="ist-aylik"></div>
     </article>
   </main>
+
+  <!-- ===== ALT NAVİGASYON BARI ===== -->
+  <nav id="alt-bar" class="alt-bar">
+    <button class="alt-bar-btn aktif" data-ekran="ekran-liste" id="bar-ana">
+      <span class="alt-bar-ikon">🏠</span>
+      <span class="alt-bar-yazi">Ana Sayfa</span>
+    </button>
+    <button class="alt-bar-btn" data-ekran="ekran-form" id="bar-yeni">
+      <span class="alt-bar-ikon">➕</span>
+      <span class="alt-bar-yazi">Yeni Kayıt</span>
+    </button>
+    <button class="alt-bar-btn" data-ekran="ekran-istatistik" id="bar-istatistik">
+      <span class="alt-bar-ikon">📊</span>
+      <span class="alt-bar-yazi">İstatistik</span>
+    </button>
+    <button class="alt-bar-btn" data-ekran="ekran-ayarlar" id="bar-ayarlar">
+      <span class="alt-bar-ikon">⚙️</span>
+      <span class="alt-bar-yazi">Ayarlar</span>
+    </button>
+  </nav>
 
   <!-- JS modülleri -->
   <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js"></script>

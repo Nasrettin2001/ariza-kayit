@@ -6,22 +6,49 @@
   display: block;
 }
 
-/* Sağ alttaki yuvarlak + butonu (FAB) */
-.fab {
+/* ===== ALT NAVİGASYON BARI ===== */
+.alt-bar {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
-  width: 3.5rem;
-  height: 3.5rem;
-  border-radius: 50%;
-  font-size: 1.8rem;
-  line-height: 1;
-  padding: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
+  justify-content: space-around;
   align-items: center;
-  justify-content: center;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  background: var(--pico-card-background-color);
+  border-top: 1px solid var(--pico-muted-border-color);
+  padding: 0.4rem 0;
+  padding-bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px));
+  z-index: 200;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.08);
+}
+.alt-bar-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  background: none;
+  border: none;
+  padding: 0.3rem 0.8rem;
+  cursor: pointer;
+  color: var(--pico-muted-color);
+  font-size: 0.7rem;
+  transition: color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+.alt-bar-btn .alt-bar-ikon {
+  font-size: 1.3rem;
+  line-height: 1;
+}
+.alt-bar-btn .alt-bar-yazi {
+  font-size: 0.65rem;
+  font-weight: 500;
+}
+.alt-bar-btn.aktif {
+  color: var(--pico-primary);
+}
+.alt-bar-btn:hover {
+  color: var(--pico-primary);
 }
 
 /* Geri butonu */
@@ -214,12 +241,52 @@
   color: var(--pico-primary);
 }
 
+/* Alt bar için sayfanın altına boşluk bırak */
+body {
+  padding-bottom: 4.5rem;
+}
+
+/* Filtre toggle ve çip listesi */
+.filtre-toggle {
+  font-weight: 600;
+  border-color: var(--pico-primary) !important;
+  color: var(--pico-primary) !important;
+}
+.cip-listesi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  width: 100%;
+  padding-top: 0.3rem;
+}
+
 /* Mobilde form alanları arası boşluk */
 @media (max-width: 576px) {
   .container {
     padding-left: 1rem;
     padding-right: 1rem;
   }
+}
+
+/* ===== AYDINLIK TEMA RENKLERİ ===== */
+:root:not([data-theme="dark"]) {
+  --pico-color: #1a1a2e;
+  --pico-h1-color: #16213e;
+  --pico-h2-color: #1a1a2e;
+  --pico-h3-color: #1a1a2e;
+  --pico-h4-color: #1a1a2e;
+  --pico-muted-color: #4a5568;
+  --pico-primary: #2563eb;
+  --pico-primary-hover: #1d4ed8;
+  --pico-primary-background: #2563eb;
+  --pico-primary-inverse: #ffffff;
+  --pico-secondary: #475569;
+  --pico-card-background-color: #ffffff;
+  --pico-background-color: #f0f4f8;
+  --pico-muted-border-color: #cbd5e1;
+  --pico-card-border-color: #e2e8f0;
+  --pico-form-element-border-color: #94a3b8;
+  --pico-form-element-focus-color: #2563eb;
 }
 
 /* İstatistik ekranı */
@@ -286,7 +353,7 @@
 @media print {
   .ekran { display: none !important; }
   #ekran-detay { display: block !important; }
-  .detay-butonlar, .btn-geri, .fab { display: none !important; }
+  .detay-butonlar, .btn-geri, .alt-bar { display: none !important; }
   #detay-icerik { padding: 0; }
   body { font-size: 12pt; }
 }
