@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Çözüm Defteri</title>
+
+  <!-- PWA meta etiketleri -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a6fb5">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Çözüm Defteri">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+
+  <!-- Pico.css: Mobil uyumlu, güzel görünüm sağlayan CSS kütüphanesi -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== EKRAN 1: ANA SAYFA (liste + arama) ===== -->
+  <main id="ekran-liste" class="container ekran aktif">
+    <header class="baslik-wrap">
+      <div>
+        <h1>Çözüm Defteri</h1>
+        <p><small>Çözülen sorunları kaydet, kolayca bul</small></p>
+      </div>
+      <button id="btn-istatistik" class="outline secondary btn-ayarlar" aria-label="İstatistik">&#9776;</button>
+      <button id="btn-ayarlar" class="outline secondary btn-ayarlar" aria-label="Ayarlar">&#9881;</button>
+    </header>
+
+    <input type="search" id="arama-kutusu" placeholder="Sorun ara... (ör: yazıcı soluk)">
+    <div id="arama-gecmisi" class="arama-gecmisi" style="display:none;"></div>
+
+    <div id="kategori-cipler" class="cipler">
+      <!-- JS ile doldurulacak -->
+    </div>
+
+    <section id="kayit-listesi">
+      <p class="bos-mesaj">Henüz kayıt yok. Sağ alttaki + butonuyla ilk kaydını ekle.</p>
+    </section>
+
+    <div id="daha-fazla-wrap" style="display:none; text-align:center; margin:1rem 0;">
+      <button id="btn-daha-fazla" class="outline">Daha fazla yükle</button>
+    </div>
+
+    <button id="btn-yeni" class="fab" aria-label="Yeni kayıt ekle">+</button>
+  </main>
+
+  <!-- ===== EKRAN 2: YENİ KAYIT / DÜZENLE ===== -->
+  <main id="ekran-form" class="container ekran">
+    <header>
+      <nav>
+        <button id="btn-form-geri" class="outline secondary btn-geri" aria-label="Geri">&larr; Geri</button>
+      </nav>
+      <h2 id="form-baslik">Yeni Kayıt</h2>
+    </header>
+
+    <div id="sablon-secici" style="margin-bottom:1rem;">
+      <small><strong>Hızlı şablon:</strong></small>
+      <div id="sablon-butonlar" class="cipler" style="margin-top:0.3rem;"></div>
+    </div>
+
+    <form id="kayit-formu" novalidate>
+      <label for="f-baslik">Başlık *</label>
+      <input type="text" id="f-baslik" name="baslik" required placeholder="Ör: Muhasebe yazıcısı soluk basıyor">
+      <div id="benzer-oneriler" class="benzer-oneriler" style="display:none;"></div>
+
+      <label for="f-kategori">Kategori *</label>
+      <select id="f-kategori" name="kategori" required>
+        <option value="">Seçiniz...</option>
+      </select>
+
+      <label for="f-belirti">Belirti *</label>
+      <textarea id="f-belirti" name="belirti" rows="3" required placeholder="Ne oluyordu? (ör: Sayfanın sol tarafı soluk)"></textarea>
+
+      <label for="f-cozum">Çözüm *</label>
+      <textarea id="f-cozum" name="cozum" rows="4" required placeholder="Ne yaptın? (ör: 1) Drum değişti 2) Sayaç sıfırlandı)"></textarea>
+
+      <!-- Ek alanlar: başta gizli, "Daha fazla" ile açılır -->
+      <details id="ek-alanlar">
+        <summary>Daha fazla alan</summary>
+
+        <label for="f-cihaz">Cihaz</label>
+        <input type="text" id="f-cihaz" name="cihaz" placeholder="Ör: Brother HL-L2350, Muhasebe">
+
+        <label for="f-hataKodu">Hata Kodu</label>
+        <input type="text" id="f-hataKodu" name="hataKodu" placeholder="Ör: Drum End Soon, 0x0000011b">
+
+        <label for="f-sebep">Sebep</label>
+        <textarea id="f-sebep" name="sebep" rows="2" placeholder="Sorunun asıl nedeni neydi?"></textarea>
+
+        <label for="f-etiketler">Etiketler</label>
+        <input type="text" id="f-etiketler" name="etiketler" placeholder="Virgülle ayır: drum, soluk-baski, brother" autocomplete="off">
+        <div id="etiket-oneriler" class="etiket-oneriler" style="display:none;"></div>
+
+        <label for="f-durum">Durum</label>
+        <select id="f-durum" name="durum">
+          <option value="Çözüldü">Çözüldü</option>
+          <option value="Geçici çözüm">Geçici çözüm</option>
+          <option value="Açık">Açık</option>
+        </select>
+
+        <label for="f-sure">Çözüm süresi (dakika)</label>
+        <input type="number" id="f-sure" name="sure" min="0" placeholder="Ör: 20">
+
+        <label for="f-kullaniciBolum">Kullanıcı / Bölüm</label>
+        <input type="text" id="f-kullaniciBolum" name="kullaniciBolum" placeholder="Ör: Ayşe H., Muhasebe">
+
+        <label for="f-fotograf">Fotoğraf</label>
+        <input type="file" id="f-fotograf" accept="image/*" capture="environment">
+        <div id="fotograf-onizleme" style="display:none;">
+          <img id="fotograf-img" style="max-width:100%; border-radius:var(--pico-border-radius); margin-top:0.5rem;" alt="Önizleme">
+          <button type="button" id="btn-fotograf-sil" class="outline secondary" style="margin-top:0.3rem; font-size:0.8rem;">Fotoğrafı kaldır</button>
+        </div>
+      </details>
+
+      <button type="submit" id="btn-kaydet">Kaydet</button>
+    </form>
+  </main>
+
+  <!-- ===== EKRAN 3: KAYIT DETAY ===== -->
+  <main id="ekran-detay" class="container ekran">
+    <header>
+      <nav>
+        <button id="btn-detay-geri" class="outline secondary btn-geri" aria-label="Geri">&larr; Geri</button>
+      </nav>
+    </header>
+    <article id="detay-icerik">
+      <!-- JS ile doldurulacak -->
+    </article>
+    <div class="detay-butonlar">
+      <button id="btn-sabitle" class="outline">📌 Sabitle</button>
+      <button id="btn-tekrar" class="outline contrast">🔄 Bu yine oldu</button>
+    </div>
+    <div class="detay-butonlar">
+      <button id="btn-duzenle" class="outline">Düzenle</button>
+      <button id="btn-yazdir" class="outline secondary">🖨️ Yazdır</button>
+      <button id="btn-sil" class="outline secondary">Sil</button>
+    </div>
+  </main>
+
+  <!-- ===== EKRAN 4: AYARLAR ===== -->
+  <main id="ekran-ayarlar" class="container ekran">
+    <header>
+      <nav>
+        <button id="btn-ayarlar-geri" class="outline secondary btn-geri" aria-label="Geri">&larr; Geri</button>
+      </nav>
+      <h2>Ayarlar</h2>
+    </header>
+
+    <article>
+      <h3>Görünüm</h3>
+      <div class="ayar-butonlar">
+        <button id="btn-tema" class="outline">Karanlık Tema</button>
+      </div>
+      <hr>
+
+      <h3>Yedekleme</h3>
+      <p><small>Kayıtlarını JSON dosyası olarak dışa aktar veya yedeği geri yükle. Haftada bir yedek almayı unutma.</small></p>
+
+      <div class="ayar-butonlar">
+        <button id="btn-disa-aktar" class="outline">JSON Dışa Aktar</button>
+        <button id="btn-csv-aktar" class="outline">CSV Dışa Aktar</button>
+      </div>
+
+      <hr>
+
+      <h4>İçe Aktar</h4>
+      <label for="f-yedek-dosya">Yedek dosyası seç (.json veya .csv)</label>
+      <input type="file" id="f-yedek-dosya" accept=".json,.csv">
+
+      <fieldset>
+        <legend>İçe aktarma modu</legend>
+        <label>
+          <input type="radio" name="ice-aktar-mod" value="birlestir" checked>
+          Birleştir (mevcut kayıtların üstüne ekle)
+        </label>
+        <label>
+          <input type="radio" name="ice-aktar-mod" value="uzerineYaz">
+          Üzerine yaz (önce sil, sonra yükle)
+        </label>
+      </fieldset>
+
+      <button id="btn-ice-aktar" class="outline secondary">İçe Aktar</button>
+
+      <div id="yedek-sonuc" style="margin-top:1rem;"></div>
+    </article>
+  </main>
+
+  <!-- ===== EKRAN 5: İSTATİSTİK ===== -->
+  <main id="ekran-istatistik" class="container ekran">
+    <header>
+      <nav>
+        <button id="btn-istatistik-geri" class="outline secondary btn-geri" aria-label="Geri">&larr; Geri</button>
+      </nav>
+      <h2>İstatistikler</h2>
+    </header>
+
+    <article>
+      <div id="ist-ozet" class="ist-ozet"></div>
+
+      <h3>Kategoriye Göre</h3>
+      <div id="ist-kategori"></div>
+
+      <hr>
+
+      <h3>Duruma Göre</h3>
+      <div id="ist-durum"></div>
+
+      <hr>
+
+      <h3>En Çok Tekrar Eden</h3>
+      <div id="ist-tekrar"></div>
+
+      <hr>
+
+      <h3>Aylık Kayıt Sayısı</h3>
+      <div id="ist-aylik"></div>
+    </article>
+  </main>
+
+  <!-- JS modülleri -->
+  <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <script type="module" src="js/db.js"></script>
+  <script type="module" src="js/app.js"></script>
+
+  <!-- Service Worker kaydı -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('[SW] Kayıt başarılı:', reg.scope))
+          .catch(hata => console.warn('[SW] Kayıt başarısız:', hata));
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# Yedek dosyaları ve gerçek veri repoya girmez
+*.json.bak
+yedek*.json
+cozum-defteri-yedek*.json
+.vscode/
+.claude/
+Thumbs.db
+.DS_Store

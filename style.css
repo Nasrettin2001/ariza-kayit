@@ -1,0 +1,292 @@
+/* Ekran yönetimi: sadece .aktif olan ekran görünür */
+.ekran {
+  display: none;
+}
+.ekran.aktif {
+  display: block;
+}
+
+/* Sağ alttaki yuvarlak + butonu (FAB) */
+.fab {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  font-size: 1.8rem;
+  line-height: 1;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* Geri butonu */
+.btn-geri {
+  padding: 0.3rem 0.8rem;
+  font-size: 0.9rem;
+}
+
+/* Kayıt kartı */
+.kayit-kart {
+  padding: 0.8rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+.kayit-kart:hover {
+  background-color: var(--pico-secondary-hover-background);
+}
+.kayit-kart h4 {
+  margin-bottom: 0.2rem;
+  font-size: 1rem;
+}
+.kayit-kart .meta {
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+}
+.kayit-kart .kategori-etiket {
+  display: inline-block;
+  background-color: var(--pico-primary-background);
+  color: var(--pico-primary-inverse);
+  padding: 0.1rem 0.5rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+}
+
+/* Kategori çipleri */
+.cipler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+.cip {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 1rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  border: 1px solid var(--pico-muted-border-color);
+  background: transparent;
+  color: var(--pico-color);
+  transition: all 0.15s;
+}
+.cip:hover {
+  border-color: var(--pico-primary);
+}
+.cip.secili {
+  background-color: var(--pico-primary);
+  color: var(--pico-primary-inverse);
+  border-color: var(--pico-primary);
+}
+
+/* Arama sonuç sayısı */
+.arama-bilgi {
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+  margin-bottom: 0.5rem;
+}
+
+/* Boş durum mesajı */
+.bos-mesaj {
+  text-align: center;
+  color: var(--pico-muted-color);
+  padding: 2rem 0;
+}
+
+/* Detay ekranı */
+#detay-icerik h3 {
+  margin-bottom: 0.5rem;
+}
+#detay-icerik .detay-alan {
+  margin-bottom: 0.8rem;
+}
+#detay-icerik .detay-alan strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--pico-muted-color);
+  margin-bottom: 0.2rem;
+}
+
+.detay-butonlar {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.detay-butonlar button {
+  flex: 1;
+}
+
+/* Başlık satırı: sol başlık, sağ ayarlar butonu */
+.baslik-wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.btn-ayarlar {
+  padding: 0.3rem 0.6rem;
+  font-size: 1.3rem;
+  line-height: 1;
+  border-radius: 50%;
+}
+
+/* Ayarlar ekranı butonlar */
+.ayar-butonlar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* Benzer kayıt önerisi kutusu */
+.benzer-oneriler {
+  background: var(--pico-card-background-color);
+  border: 1px solid var(--pico-primary);
+  border-radius: var(--pico-border-radius);
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.benzer-oneri-kart {
+  padding: 0.4rem 0.5rem;
+  cursor: pointer;
+  border-radius: var(--pico-border-radius);
+  transition: background-color 0.15s;
+}
+.benzer-oneri-kart:hover {
+  background-color: var(--pico-secondary-hover-background);
+}
+.benzer-oneri-kart .kategori-etiket {
+  margin-left: 0.3rem;
+}
+
+/* Etiket otomatik tamamlama */
+.etiket-oneriler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+}
+.etiket-oneri {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: 1px solid var(--pico-primary);
+  background: transparent;
+  color: var(--pico-primary);
+  transition: all 0.15s;
+}
+.etiket-oneri:hover {
+  background-color: var(--pico-primary);
+  color: var(--pico-primary-inverse);
+}
+
+/* Arama geçmişi */
+.arama-gecmisi {
+  margin-bottom: 0.5rem;
+}
+.arama-gecmisi-baslik {
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+  margin-bottom: 0.3rem;
+}
+.arama-gecmisi-oge {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  margin: 0.15rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  border: 1px solid var(--pico-muted-border-color);
+  background: transparent;
+  color: var(--pico-color);
+  transition: all 0.15s;
+}
+.arama-gecmisi-oge:hover {
+  border-color: var(--pico-primary);
+  color: var(--pico-primary);
+}
+
+/* Mobilde form alanları arası boşluk */
+@media (max-width: 576px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* İstatistik ekranı */
+.ist-ozet {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.ist-kart {
+  flex: 1;
+  min-width: 120px;
+  text-align: center;
+  padding: 0.8rem 0.5rem;
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: var(--pico-border-radius);
+}
+.ist-kart .sayi {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--pico-primary);
+  display: block;
+}
+.ist-kart .etiket {
+  font-size: 0.8rem;
+  color: var(--pico-muted-color);
+}
+
+.ist-cubuk-wrap {
+  margin-bottom: 0.5rem;
+}
+.ist-cubuk-baslik {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  margin-bottom: 0.2rem;
+}
+.ist-cubuk {
+  height: 1.2rem;
+  background: var(--pico-muted-border-color);
+  border-radius: 0.6rem;
+  overflow: hidden;
+}
+.ist-cubuk-dolu {
+  height: 100%;
+  background: var(--pico-primary);
+  border-radius: 0.6rem;
+  transition: width 0.3s ease;
+}
+
+.ist-tekrar-liste {
+  list-style: none;
+  padding: 0;
+}
+.ist-tekrar-liste li {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--pico-muted-border-color);
+  font-size: 0.9rem;
+}
+
+/* Yazdırma görünümü: sadece detay içeriği gösterilir */
+@media print {
+  .ekran { display: none !important; }
+  #ekran-detay { display: block !important; }
+  .detay-butonlar, .btn-geri, .fab { display: none !important; }
+  #detay-icerik { padding: 0; }
+  body { font-size: 12pt; }
+}
