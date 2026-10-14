@@ -4,7 +4,7 @@ Her adım kendi başına çalışan bir sürüm verir. Bitmeden sonrakine geçme
 
 ## Adım 0: Hazırlık
 - [x] VS Code + Live Server kurulu
-- [ ] Git kurulu, GitHub'da `petka-ariza-kayit` reposu açıldı
+- [x] Git kurulu, ilk commit yapıldı
 - [x] Klasör yapısı ve boş dosyalar oluşturuldu (CLAUDE.md'deki yapı)
 
 ## Adım 1: Kayıt ekle ve listele
