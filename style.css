@@ -149,23 +149,31 @@ body {
   font-size: 0.8rem;
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid var(--pico-muted-border-color);
-  background: var(--pico-card-background-color);
-  color: var(--pico-color);
   transition: all 0.15s;
   box-shadow: var(--cd-kart-golge);
+  --pico-background-color: transparent;
+  --pico-color: #1e293b;
+  --pico-border-color: var(--pico-muted-border-color);
+  background-color: var(--pico-card-background-color) !important;
+  border: 1px solid var(--pico-muted-border-color) !important;
+  color: #1e293b !important;
 }
-.cip:hover { border-color: var(--cd-accent); color: var(--cd-accent); }
+:root[data-theme="dark"] .cip {
+  --pico-color: #e2e8f0;
+  color: #e2e8f0 !important;
+}
+.cip:hover { border-color: var(--cd-accent) !important; color: var(--cd-accent) !important; }
 .cip.secili {
-  background: var(--cd-accent);
-  color: #fff;
-  border-color: var(--cd-accent);
+  background-color: var(--cd-accent) !important;
+  color: #fff !important;
+  border-color: var(--cd-accent) !important;
   box-shadow: 0 2px 8px rgba(59,130,246,0.25);
 }
 .filtre-toggle {
   font-weight: 600;
   border-color: var(--cd-accent) !important;
   color: var(--cd-accent) !important;
+  background: var(--cd-accent-soft) !important;
 }
 .cip-listesi {
   display: flex;

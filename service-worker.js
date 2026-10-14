@@ -1,5 +1,5 @@
 // Önbellek adı sürümlü: dosyalar değişince bu numarayı artır
-const CACHE_ADI = 'cozum-defteri-v7';
+const CACHE_ADI = 'cozum-defteri-v8';
 
 // Çevrimdışı çalışması için önbelleğe alınacak dosyalar
 const ONBELLEK_DOSYALAR = [
