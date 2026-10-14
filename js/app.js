@@ -187,6 +187,22 @@ async function aramaYap() {
   }
 }
 
+// Kategori ikonları (SVG)
+const KATEGORI_IKONLARI = {
+  'Yazıcı': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>',
+  'Ağ / Kablolama': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2"/><rect x="2" y="14" width="20" height="8" rx="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>',
+  'VPN': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>',
+  'Windows / Yazılım': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>',
+  'Kullanıcı hesabı': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>',
+  'Office / E-posta': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+  'Donanım': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>',
+  'Firewall': '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+};
+
+function kategoriIkonGetir(kategori) {
+  return KATEGORI_IKONLARI[kategori] || '<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+}
+
 // ===== LİSTE =====
 async function listeYenile() {
   mevcutSayfa = 0;
@@ -200,8 +216,37 @@ async function listeYenile() {
     return;
   }
 
-  sonuc.kayitlar.forEach(k => liste.appendChild(kartOlustur(k)));
+  kategoriGrupluListeOlustur(sonuc.kayitlar, liste);
   document.getElementById('daha-fazla-wrap').style.display = sonuc.dahaVar ? '' : 'none';
+}
+
+function kategoriGrupluListeOlustur(kayitlar, liste) {
+  const gruplar = {};
+  // Sabitlenenleri ayrı tut
+  const sabitlenenler = kayitlar.filter(k => k.sabitlendi);
+  const normalKayitlar = kayitlar.filter(k => !k.sabitlendi);
+
+  if (sabitlenenler.length > 0) {
+    const baslik = document.createElement('div');
+    baslik.className = 'kategori-grup-baslik';
+    baslik.innerHTML = `<svg class="kategori-grup-ikon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/></svg> Sabitlenmiş <span class="grup-sayi">${sabitlenenler.length}</span>`;
+    liste.appendChild(baslik);
+    sabitlenenler.forEach(k => liste.appendChild(kartOlustur(k)));
+  }
+
+  normalKayitlar.forEach(k => {
+    const kat = k.kategori || 'Diğer';
+    if (!gruplar[kat]) gruplar[kat] = [];
+    gruplar[kat].push(k);
+  });
+
+  Object.entries(gruplar).forEach(([kategori, kayitListesi]) => {
+    const baslik = document.createElement('div');
+    baslik.className = 'kategori-grup-baslik';
+    baslik.innerHTML = `${kategoriIkonGetir(kategori)} ${htmlKacis(kategori)} <span class="grup-sayi">${kayitListesi.length}</span>`;
+    liste.appendChild(baslik);
+    kayitListesi.forEach(k => liste.appendChild(kartOlustur(k)));
+  });
 }
 
 async function dahaFazlaYukle() {
@@ -225,13 +270,18 @@ function kartOlustur(kayit) {
   div.className = 'kayit-kart';
   div.dataset.id = kayit.id;
 
+  const durumBadge = kayit.durum === 'Açık'
+    ? '<span class="durum-badge durum-acik">Açık</span>'
+    : kayit.durum === 'Geçici çözüm'
+    ? '<span class="durum-badge durum-gecici">Geçici</span>'
+    : '';
+
   div.innerHTML = `
-    <h4>${kayit.sabitlendi ? '📌 ' : ''}${htmlKacis(kayit.baslik)}</h4>
+    <h4>${htmlKacis(kayit.baslik)}</h4>
     <div class="meta">
-      <span class="kategori-etiket">${htmlKacis(kayit.kategori)}</span>
-      ${kayit.durum && kayit.durum !== 'Çözüldü' ? ` · <em>${htmlKacis(kayit.durum)}</em>` : ''}
-      · ${tarihFormatla(kayit.tarih)}
-      ${kayit.tekrarSayisi > 1 ? ` · 🔁 ${kayit.tekrarSayisi}x` : ''}
+      <span>${tarihFormatla(kayit.tarih)}</span>
+      ${durumBadge}
+      ${kayit.tekrarSayisi > 1 ? `<span class="tekrar-badge">${kayit.tekrarSayisi}x tekrar</span>` : ''}
     </div>
   `;
 
