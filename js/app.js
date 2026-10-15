@@ -404,8 +404,13 @@ async function formuKaydet(e) {
   const belirti = document.getElementById('f-belirti').value.trim();
   const cozum = document.getElementById('f-cozum').value.trim();
 
-  if (!baslik || !kategori || !belirti || !cozum) {
-    alert('Lütfen zorunlu alanları doldurun: Başlık, Kategori, Belirti ve Çözüm.');
+  const eksikler = [];
+  if (!baslik) eksikler.push('Başlık');
+  if (!kategori) eksikler.push('Kategori');
+  if (!belirti) eksikler.push('Belirti');
+  if (!cozum) eksikler.push('Çözüm');
+  if (eksikler.length > 0) {
+    alert('Şu alanları doldurman gerekiyor: ' + eksikler.join(', '));
     return;
   }
 
