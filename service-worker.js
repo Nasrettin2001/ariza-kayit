@@ -1,5 +1,5 @@
 // Önbellek adı sürümlü: dosyalar değişince bu numarayı artır
-const CACHE_ADI = 'cozum-defteri-v11';
+const CACHE_ADI = 'cozum-defteri-v12';
 
 // Çevrimdışı çalışması için önbelleğe alınacak dosyalar
 const ONBELLEK_DOSYALAR = [
@@ -13,67 +13,57 @@ const ONBELLEK_DOSYALAR = [
   './manifest.json',
   './icons/icon-192.svg',
   './icons/icon-512.svg',
-  // CDN kütüphaneleri de önbelleğe al (çevrimdışı çalışsın)
-  'https://cdn.jsdelivr.net/npm/@picocss/pico@2.0.6/css/pico.min.css',
   'https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js',
   'https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js'
 ];
 
-// INSTALL: Service worker ilk kurulduğunda dosyaları önbelleğe al
+// INSTALL: Hemen aktif olmasını sağla
 self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_ADI)
-      .then(cache => {
-        console.log('[SW] Dosyalar önbelleğe alınıyor...');
-        return cache.addAll(ONBELLEK_DOSYALAR);
-      })
-      .then(() => self.skipWaiting())
-      .catch(hata => {
-        console.warn('[SW] Önbelleğe alma sırasında hata (CDN erişilememiş olabilir):', hata);
-      })
+      .then(cache => cache.addAll(ONBELLEK_DOSYALAR))
+      .catch(err => console.warn('[SW] Cache hatasi:', err))
   );
 });
 
-// ACTIVATE: Eski önbellekleri temizle
+// ACTIVATE: Eski tüm cache'leri anında sil ve sayfaları kontrolüne al
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(anahtarlar =>
       Promise.all(
         anahtarlar
           .filter(a => a !== CACHE_ADI)
-          .map(a => {
-            console.log('[SW] Eski önbellek siliniyor:', a);
-            return caches.delete(a);
-          })
+          .map(a => caches.delete(a))
       )
     ).then(() => self.clients.claim())
   );
 });
 
-// FETCH: Önce önbellekten bak, yoksa ağdan al
+// FETCH: Network-First (Önce Ağdan Yeni Sürümü Al, İnternet Yoksa Önbellekten Al)
 self.addEventListener('fetch', event => {
+  // Sadece GET isteklerini işle
+  if (event.request.method !== 'GET') return;
+
   event.respondWith(
-    caches.match(event.request)
-      .then(onbellekYanit => {
-        if (onbellekYanit) {
-          return onbellekYanit;
+    fetch(event.request)
+      .then(agYanit => {
+        if (agYanit && agYanit.status === 200) {
+          const kopya = agYanit.clone();
+          caches.open(CACHE_ADI).then(cache => {
+            cache.put(event.request, kopya);
+          });
         }
-        return fetch(event.request).then(agYanit => {
-          // Başarılı ağ yanıtlarını da önbelleğe ekle (dinamik önbellekleme)
-          if (agYanit && agYanit.status === 200) {
-            const yanitKopyasi = agYanit.clone();
-            caches.open(CACHE_ADI).then(cache => {
-              cache.put(event.request, yanitKopyasi);
-            });
-          }
-          return agYanit;
-        });
+        return agYanit;
       })
       .catch(() => {
-        // Hem önbellek hem ağ başarısızsa çevrimdışı sayfayı göster
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
+        // İnternet yoksa önbellekten sun
+        return caches.match(event.request).then(onbellek => {
+          if (onbellek) return onbellek;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        });
       })
   );
 });
