@@ -533,7 +533,6 @@ function olaylariKur() {
         formuTemizle();
       } else if (hedef === 'ekran-istatistik') {
         istatistikGoster();
-        return;
       }
       ekranGoster(hedef);
     });
