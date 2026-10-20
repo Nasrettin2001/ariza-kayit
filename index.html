@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="dark" lang="tr">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
@@ -7,637 +7,334 @@
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0b1326">
+  <meta name="theme-color" content="#2563eb">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Çözüm Defteri">
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
 
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- İkonlar (Google Fonts Material Symbols) -->
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
 
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script id="tailwind-config">
-    tailwind.config = {
-      darkMode: "class",
-      theme: {
-        extend: {
-          colors: {
-            "surface-container-lowest": "#060e20",
-            "surface-container-low":   "#131b2e",
-            "surface-container":       "#171f33",
-            "surface-container-high":  "#222a3d",
-            "surface-container-highest":"#2d3449",
-            "surface":                 "#0b1326",
-            "surface-bright":          "#31394d",
-            "on-surface":              "#dae2fd",
-            "on-surface-variant":      "#bfc7d2",
-            "outline":                 "#89929b",
-            "outline-variant":         "#3f4850",
-            "primary":                 "#93ccff",
-            "on-primary":              "#003351",
-            "primary-container":       "#3198dc",
-            "primary-fixed-dim":       "#93ccff",
-            "secondary":               "#7bd0ff",
-            "on-secondary":            "#00354a",
-            "secondary-container":     "#00a6e0",
-            "secondary-fixed":         "#c4e7ff",
-            "tertiary":                "#ffb95f",
-            "on-tertiary":             "#472a00",
-            "tertiary-container":      "#ca8100",
-            "tertiary-fixed-dim":      "#ffb95f",
-            "error":                   "#ffb4ab",
-            "on-error":                "#690005",
-            "error-container":         "#93000a",
-            "on-error-container":      "#ffdad6",
-            "background":              "#0b1326",
-            "on-background":           "#dae2fd",
-          },
-          borderRadius: {
-            DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"
-          },
-          spacing: {
-            "margin":    "1rem",
-            "space-xs":  "0.25rem",
-            "space-sm":  "0.5rem",
-            "space-md":  "0.75rem",
-            "space-lg":  "1.25rem",
-            "space-xl":  "1.75rem",
-            "gutter":    "0.75rem",
-          },
-          fontFamily: {
-            "headline": ["Space Grotesk"],
-            "mono":     ["JetBrains Mono"],
-          },
-          fontSize: {
-            "label-sm":  ["0.6875rem", { lineHeight: "0.875rem", letterSpacing: "0.08em", fontWeight: "500" }],
-            "label-md":  ["0.75rem",   { lineHeight: "1rem",     letterSpacing: "0.05em", fontWeight: "500" }],
-            "head-sm":   ["1rem",      { lineHeight: "1.5rem",   fontWeight: "600" }],
-            "head-md":   ["1.25rem",   { lineHeight: "1.75rem",  fontWeight: "600" }],
-            "head-lg":   ["1.5rem",    { lineHeight: "2rem",     fontWeight: "700" }],
-            "body-sm":   ["0.75rem",   { lineHeight: "1rem",     fontWeight: "400" }],
-            "body-md":   ["0.8125rem", { lineHeight: "1.25rem",  fontWeight: "400" }],
-            "body-lg":   ["0.9375rem", { lineHeight: "1.5rem",   fontWeight: "400" }],
-          }
-        }
-      }
-    };
-  </script>
-
-  <style>
-    @layer base {
-      html, body { width: 100%; margin: 0; padding: 0; }
-      body { overscroll-behavior: none; background-color: #060e20; }
-      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
-    }
-    ::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
-    /* Ekran yönetimi */
-    .ekran { display: none; }
-    .ekran.aktif { display: flex; flex-direction: column; }
-
-    /* Yazıcı */
-    @media print {
-      .ekran { display: none !important; }
-      #ekran-detay { display: block !important; }
-      #alt-bar, .btn-geri, .detay-butonlar { display: none !important; }
-      body { font-size: 12pt; }
-    }
-  </style>
+  <!-- Ana Stil Dosyası -->
+  <link rel="stylesheet" href="style.css">
 </head>
 
-<body class="bg-surface-container-lowest text-on-surface font-mono text-body-md antialiased min-h-screen flex justify-center">
-<div class="w-full max-w-[600px] bg-surface relative min-h-screen flex flex-col shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+<body>
+<div class="app-wrapper">
 
-  <!-- ===== SABİT HEADER ===== -->
-  <header class="fixed top-0 w-full max-w-[600px] z-50 bg-surface/85 backdrop-blur-xl pt-safe">
-    <div class="h-14 px-margin flex items-center justify-between">
-      <div class="flex items-center gap-space-sm">
-        <span class="material-symbols-outlined text-primary text-[22px]">book_2</span>
-        <div class="flex flex-col">
-          <span class="font-headline text-head-sm font-semibold tracking-tight text-on-surface">Çözüm Defteri</span>
-        </div>
+  <!-- ===== ÜST SABİT BAŞLIK ===== -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="brand-badge">
+        <span class="material-symbols-outlined" style="color:var(--accent); font-size:24px;">book_2</span>
+        <span class="brand-title">Çözüm Defteri</span>
       </div>
-      <button id="btn-tema" class="w-9 h-9 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-container transition-all active:scale-95" aria-label="Tema değiştir">
-        <span class="material-symbols-outlined text-[20px]" id="tema-ikon">dark_mode</span>
+      <button id="btn-tema" class="btn-icon" aria-label="Tema Değiştir">
+        <span class="material-symbols-outlined" id="tema-ikon" style="font-size:20px;">dark_mode</span>
       </button>
     </div>
   </header>
 
-  <!-- ===== EKRAN 1: ANA SAYFA ===== -->
-  <main id="ekran-liste" class="ekran aktif w-full px-margin pt-14 pb-24 flex-col gap-space-md bg-surface overflow-y-auto">
-
-    <!-- Hero Bant -->
-    <div class="flex items-center justify-between pt-space-md pb-space-xs">
+  <!-- ===== EKRAN 1: ANA SAYFA (LİSTE & ARAMA) ===== -->
+  <main id="ekran-liste" class="ekran aktif">
+    <!-- Hero Başlık & Sayaç -->
+    <div class="hero-box">
       <div>
-        <h1 class="font-headline text-head-lg text-on-surface tracking-tight">Çözüm Defteri</h1>
-        <p class="text-label-sm text-on-surface-variant mt-0.5">Çözülen sorunları kaydet, kolayca bul</p>
+        <h1>Çözüm Defteri</h1>
+        <p>Çözülen sorunları kaydet, kolayca bul</p>
       </div>
-      <div id="hero-sayac" class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-highest text-secondary text-label-sm">
-        <span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+      <div class="hero-counter">
+        <span class="pulse-dot"></span>
         <span id="hero-kayit-sayi">— kayıt</span>
       </div>
     </div>
 
     <!-- Arama -->
-    <div class="flex flex-col gap-space-sm">
-      <div class="relative flex items-center">
-        <span class="material-symbols-outlined absolute left-3.5 text-on-surface-variant text-[18px] pointer-events-none">search</span>
-        <input type="search" id="arama-kutusu"
-          class="w-full h-11 pl-10 pr-4 bg-surface-container-low text-on-surface placeholder:text-outline text-body-md rounded-full outline-none focus:bg-surface-container-high focus:ring-1 focus:ring-primary/40 transition-all"
-          placeholder="Sorun ara... (ör: yazıcı soluk)">
-      </div>
-
-      <!-- Arama geçmişi -->
-      <div id="arama-gecmisi" class="arama-gecmisi" style="display:none;"></div>
+    <div class="search-wrapper">
+      <span class="material-symbols-outlined search-icon">search</span>
+      <input type="search" id="arama-kutusu" placeholder="Sorun ara... (ör: yazıcı soluk)">
     </div>
 
-    <!-- Kategori filtreleri -->
-    <div id="kategori-cipler" class="flex flex-wrap gap-space-xs -mx-margin px-margin overflow-x-auto no-scrollbar pb-1"></div>
+    <!-- Arama Geçmişi -->
+    <div id="arama-gecmisi" class="arama-gecmisi" style="display:none;"></div>
 
-    <!-- Kayıt listesi -->
-    <section id="kayit-listesi" class="flex flex-col gap-space-sm pb-4">
-      <p class="bos-mesaj text-center text-on-surface-variant py-12 text-body-md">
-        Henüz kayıt yok. Alttaki "Yeni Kayıt" butonuyla ilk kaydını ekle.
-      </p>
+    <!-- Kategori Çipleri -->
+    <div id="kategori-cipler" class="cipler"></div>
+
+    <!-- Kayıt Listesi -->
+    <section id="kayit-listesi">
+      <p class="bos-mesaj">Henüz kayıt yok. Alttaki "Yeni Kayıt" butonuyla ilk kaydını ekle.</p>
     </section>
 
-    <!-- Daha fazla yükle -->
-    <div id="daha-fazla-wrap" style="display:none;" class="flex justify-center pb-2">
-      <button id="btn-daha-fazla"
-        class="w-full py-2.5 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high text-primary text-label-md flex items-center justify-center gap-2 active:scale-[0.98] transition-all">
-        <span class="material-symbols-outlined text-[18px]">expand_more</span>
+    <!-- Daha Fazla Yükle Butonu -->
+    <div id="daha-fazla-wrap" style="display:none; text-align:center; margin-top:1rem;">
+      <button id="btn-daha-fazla" class="btn-secondary" style="width:100%; justify-content:center; padding:0.75rem;">
+        <span class="material-symbols-outlined" style="font-size:18px;">expand_more</span>
         <span>Daha fazla yükle</span>
       </button>
     </div>
   </main>
 
   <!-- ===== EKRAN 2: YENİ KAYIT / DÜZENLE ===== -->
-  <main id="ekran-form" class="ekran w-full px-margin pt-14 pb-24 flex-col gap-space-md bg-surface overflow-y-auto">
-
-    <!-- Başlık bar -->
-    <div class="flex items-center justify-between pt-space-sm">
-      <button id="btn-form-geri"
-        class="btn-geri flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface text-label-md active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[16px] text-primary">arrow_back</span>
+  <main id="ekran-form" class="ekran">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+      <button id="btn-form-geri" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
         <span>Geri</span>
       </button>
-      <h2 id="form-baslik" class="font-headline text-head-sm text-on-surface font-semibold">Yeni Kayıt</h2>
+      <h2 id="form-baslik" style="font-size:1.15rem; font-weight:800;">Yeni Kayıt</h2>
     </div>
 
-    <!-- Hızlı şablonlar -->
-    <div id="sablon-secici">
-      <span class="text-label-sm text-outline uppercase tracking-wider block mb-space-xs">Hızlı Şablon</span>
-      <div id="sablon-butonlar" class="flex gap-space-xs overflow-x-auto no-scrollbar -mx-margin px-margin pb-1"></div>
+    <!-- Hızlı Şablonlar -->
+    <div id="sablon-secici" style="margin-bottom:1rem;">
+      <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Hızlı Şablon:</span>
+      <div id="sablon-butonlar" class="cipler" style="margin-top:0.4rem;"></div>
     </div>
 
-    <!-- Form -->
-    <form id="kayit-formu" novalidate class="flex flex-col gap-space-md">
-
-      <!-- ZORUNLU ALANLAR -->
-      <div class="flex flex-col gap-space-md bg-surface-container-low p-space-md rounded-xl shadow-md">
-
-        <!-- Başlık -->
-        <div class="flex flex-col gap-1">
-          <label for="f-baslik" class="text-label-md text-on-surface flex items-center gap-1">
-            Başlık <span class="text-error">*</span>
-          </label>
-          <input type="text" id="f-baslik" name="baslik" required
-            class="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline/60 text-body-md px-3 py-2.5 rounded-lg outline-none focus:bg-surface-container-high transition-colors"
-            placeholder="Ör: Muhasebe yazıcısı soluk basıyor">
+    <form id="kayit-formu" novalidate>
+      <div class="form-box">
+        <div class="form-group">
+          <label for="f-baslik">Başlık *</label>
+          <input type="text" id="f-baslik" name="baslik" required placeholder="Ör: Muhasebe yazıcısı soluk basıyor">
           <div id="benzer-oneriler" class="benzer-oneriler" style="display:none;"></div>
         </div>
 
-        <!-- Kategori -->
-        <div class="flex flex-col gap-1">
-          <label for="f-kategori" class="text-label-md text-on-surface flex items-center gap-1">
-            Kategori <span class="text-error">*</span>
-          </label>
-          <div class="relative">
-            <select id="f-kategori" name="kategori" required
-              class="w-full appearance-none bg-surface-container-lowest text-on-surface text-body-md px-3 py-2.5 rounded-lg outline-none pr-10 focus:bg-surface-container-high transition-colors">
-              <option value="">Seçiniz...</option>
-            </select>
-            <span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-outline text-[20px]">expand_more</span>
-          </div>
+        <div class="form-group">
+          <label for="f-kategori">Kategori *</label>
+          <select id="f-kategori" name="kategori" required>
+            <option value="">Seçiniz...</option>
+          </select>
         </div>
 
-        <!-- Belirti -->
-        <div class="flex flex-col gap-1">
-          <label for="f-belirti" class="text-label-md text-on-surface flex items-center gap-1">
-            Belirti <span class="text-error">*</span>
-          </label>
-          <textarea id="f-belirti" name="belirti" rows="3" required
-            class="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline/60 text-body-md p-3 rounded-lg outline-none focus:bg-surface-container-high transition-colors leading-relaxed resize-none"
-            placeholder="Ne oluyordu? (ör: Sayfanın sol tarafı soluk)"></textarea>
+        <div class="form-group">
+          <label for="f-belirti">Belirti *</label>
+          <textarea id="f-belirti" name="belirti" rows="3" required placeholder="Ne oluyordu? (ör: Sayfanın sol tarafı soluk)"></textarea>
         </div>
 
-        <!-- Çözüm -->
-        <div class="flex flex-col gap-1">
-          <label for="f-cozum" class="text-label-md text-on-surface flex items-center gap-1">
-            Çözüm <span class="text-error">*</span>
-          </label>
-          <textarea id="f-cozum" name="cozum" rows="4" required
-            class="w-full bg-surface-container-lowest text-on-surface placeholder:text-outline/60 text-body-md p-3 rounded-lg outline-none focus:bg-surface-container-high transition-colors leading-relaxed resize-none font-mono"
-            placeholder="Ne yaptın? (ör: 1) Drum değişti 2) Sayaç sıfırlandı)"></textarea>
+        <div class="form-group">
+          <label for="f-cozum">Çözüm *</label>
+          <textarea id="f-cozum" name="cozum" rows="4" required placeholder="Ne yaptın? (ör: 1) Drum değişti 2) Sayaç sıfırlandı)"></textarea>
         </div>
       </div>
 
-      <!-- EK ALANLAR (gizlenebilir) -->
-      <details id="ek-alanlar" class="group bg-surface-container-low rounded-xl shadow-md overflow-hidden">
-        <summary class="flex items-center justify-between p-space-md cursor-pointer list-none select-none hover:bg-surface-container transition-colors">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-primary text-[18px]">tune</span>
-            <span class="font-headline text-head-sm text-on-surface">Daha fazla alan</span>
-          </div>
-          <span class="material-symbols-outlined text-outline transition-transform duration-200 group-open:rotate-180">expand_more</span>
+      <!-- Ek Alanlar -->
+      <details id="ek-alanlar" class="form-box" style="cursor:pointer;">
+        <summary style="font-size:0.85rem; font-weight:700; color:var(--text-secondary); list-style:none; display:flex; justify-content:space-between; align-items:center;">
+          <span>Daha fazla alan (isteğe bağlı)</span>
+          <span class="material-symbols-outlined" style="font-size:18px;">tune</span>
         </summary>
 
-        <div class="p-space-md pt-0 flex flex-col gap-space-md">
-          <!-- Cihaz & Hata Kodu -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm pt-space-xs">
-            <div class="flex flex-col gap-1">
-              <label for="f-cihaz" class="text-label-sm text-outline uppercase">Cihaz</label>
-              <input type="text" id="f-cihaz" name="cihaz"
-                class="w-full bg-surface-container-lowest text-on-surface text-body-sm px-3 py-2 rounded-lg outline-none focus:bg-surface-container-high"
-                placeholder="Ör: Brother HL-L2350, Muhasebe">
-            </div>
-            <div class="flex flex-col gap-1">
-              <label for="f-hataKodu" class="text-label-sm text-outline uppercase">Hata Kodu</label>
-              <input type="text" id="f-hataKodu" name="hataKodu"
-                class="w-full bg-surface-container-lowest text-error text-body-sm px-3 py-2 rounded-lg outline-none focus:bg-surface-container-high font-mono"
-                placeholder="Ör: Drum End Soon">
-            </div>
+        <div style="margin-top:0.85rem; display:flex; flex-direction:column; gap:0.85rem;">
+          <div class="form-group">
+            <label for="f-cihaz">Cihaz</label>
+            <input type="text" id="f-cihaz" name="cihaz" placeholder="Ör: Brother HL-L2350, Muhasebe">
           </div>
 
-          <!-- Sebep -->
-          <div class="flex flex-col gap-1">
-            <label for="f-sebep" class="text-label-sm text-outline uppercase">Sebep</label>
-            <textarea id="f-sebep" name="sebep" rows="2"
-              class="w-full bg-surface-container-lowest text-on-surface text-body-sm p-3 rounded-lg outline-none focus:bg-surface-container-high resize-none"
-              placeholder="Sorunun asıl nedeni neydi?"></textarea>
+          <div class="form-group">
+            <label for="f-hataKodu">Hata Kodu</label>
+            <input type="text" id="f-hataKodu" name="hataKodu" placeholder="Ör: Drum End Soon, 0x0000011b">
           </div>
 
-          <!-- Etiketler -->
-          <div class="flex flex-col gap-1.5">
-            <label for="f-etiketler" class="text-label-sm text-outline uppercase">Etiketler</label>
-            <input type="text" id="f-etiketler" name="etiketler" autocomplete="off"
-              class="w-full bg-surface-container-lowest text-on-surface text-body-sm px-3 py-2 rounded-lg outline-none focus:bg-surface-container-high"
-              placeholder="Virgülle ayır: drum, soluk-baski, brother">
-            <div id="etiket-oneriler" class="etiket-oneriler flex flex-wrap gap-1.5" style="display:none;"></div>
+          <div class="form-group">
+            <label for="f-sebep">Sebep</label>
+            <textarea id="f-sebep" name="sebep" rows="2" placeholder="Sorunun asıl nedeni neydi?"></textarea>
           </div>
 
-          <!-- Durum & Süre -->
-          <div class="grid grid-cols-2 gap-space-sm">
-            <div class="flex flex-col gap-1">
-              <label for="f-durum" class="text-label-sm text-outline uppercase">Durum</label>
-              <div class="relative">
-                <select id="f-durum" name="durum"
-                  class="w-full appearance-none bg-surface-container-lowest text-on-surface text-body-sm px-3 py-2 rounded-lg outline-none pr-8">
-                  <option value="Çözüldü">✅ Çözüldü</option>
-                  <option value="Geçici çözüm">⚠️ Geçici çözüm</option>
-                  <option value="Açık">🔴 Açık</option>
-                </select>
-                <span class="material-symbols-outlined absolute right-2.5 top-1.5 pointer-events-none text-outline text-[18px]">expand_more</span>
-              </div>
+          <div class="form-group">
+            <label for="f-etiketler">Etiketler</label>
+            <input type="text" id="f-etiketler" name="etiketler" placeholder="Virgülle ayır: drum, soluk-baski, brother" autocomplete="off">
+            <div id="etiket-oneriler" class="etiket-oneriler" style="display:none; margin-top:0.4rem;"></div>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
+            <div class="form-group">
+              <label for="f-durum">Durum</label>
+              <select id="f-durum" name="durum">
+                <option value="Çözüldü">Çözüldü</option>
+                <option value="Geçici çözüm">Geçici çözüm</option>
+                <option value="Açık">Açık</option>
+              </select>
             </div>
-            <div class="flex flex-col gap-1">
-              <label for="f-sure" class="text-label-sm text-outline uppercase">Süre (Dk)</label>
-              <div class="relative">
-                <input type="number" id="f-sure" name="sure" min="0"
-                  class="w-full bg-surface-container-lowest text-on-surface text-body-sm px-3 py-2 rounded-lg outline-none font-mono pr-10 focus:bg-surface-container-high"
-                  placeholder="20">
-                <span class="absolute right-3 top-2 text-label-sm text-outline pointer-events-none">DAK</span>
-              </div>
+            <div class="form-group">
+              <label for="f-sure">Süre (dakika)</label>
+              <input type="number" id="f-sure" name="sure" min="0" placeholder="Ör: 20">
             </div>
           </div>
 
-          <!-- Kullanıcı / Bölüm -->
-          <div class="flex flex-col gap-1">
-            <label for="f-kullaniciBolum" class="text-label-sm text-outline uppercase">Kullanıcı / Bölüm</label>
-            <div class="relative flex items-center">
-              <span class="material-symbols-outlined absolute left-3 text-outline text-[16px]">badge</span>
-              <input type="text" id="f-kullaniciBolum" name="kullaniciBolum"
-                class="w-full bg-surface-container-lowest text-on-surface text-body-sm pl-9 pr-3 py-2 rounded-lg outline-none focus:bg-surface-container-high"
-                placeholder="Ör: Ayşe H., Muhasebe">
-            </div>
+          <div class="form-group">
+            <label for="f-kullaniciBolum">Kullanıcı / Bölüm</label>
+            <input type="text" id="f-kullaniciBolum" name="kullaniciBolum" placeholder="Ör: Ayşe H., Muhasebe">
           </div>
 
-          <!-- Fotoğraf -->
-          <div class="flex flex-col gap-2">
-            <label class="text-label-sm text-outline uppercase">Fotoğraf</label>
-            <label for="f-fotograf"
-              class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-lowest cursor-pointer hover:bg-surface-container transition-colors group">
-              <span class="material-symbols-outlined text-secondary text-[24px] group-hover:scale-110 transition-transform">photo_camera</span>
-              <span class="text-body-sm text-on-surface-variant">Fotoğraf çek veya seç</span>
-              <input type="file" id="f-fotograf" accept="image/*" capture="environment" class="hidden">
-            </label>
-            <div id="fotograf-onizleme" style="display:none;" class="flex items-center gap-space-sm p-space-sm bg-surface-container-lowest rounded-lg">
-              <img id="fotograf-img" class="w-16 h-16 object-cover rounded-lg" alt="Önizleme">
-              <div class="flex flex-col gap-1.5">
-                <span class="text-body-sm text-on-surface">Fotoğraf seçildi</span>
-                <button type="button" id="btn-fotograf-sil"
-                  class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface-container-high hover:bg-error-container hover:text-on-error-container text-error text-label-sm transition-colors active:scale-95">
-                  <span class="material-symbols-outlined text-[14px]">delete</span>
-                  <span>Fotoğrafı kaldır</span>
-                </button>
-              </div>
+          <div class="form-group">
+            <label for="f-fotograf">Fotoğraf</label>
+            <input type="file" id="f-fotograf" accept="image/*" capture="environment">
+            <div id="fotograf-onizleme" style="display:none; margin-top:0.5rem;">
+              <img id="fotograf-img" style="max-width:100%; border-radius:0.5rem;" alt="Önizleme">
+              <button type="button" id="btn-fotograf-sil" class="btn-secondary btn-danger" style="margin-top:0.4rem;">Fotoğrafı kaldır</button>
             </div>
           </div>
         </div>
       </details>
 
-      <!-- KAYDET BUTONU -->
-      <button type="submit" id="btn-kaydet"
-        class="w-full py-3.5 px-space-md rounded-xl bg-primary hover:bg-primary-fixed-dim text-on-primary font-headline text-head-sm flex items-center justify-center gap-2 shadow-lg active:scale-[0.99] transition-all">
-        <span class="material-symbols-outlined text-[20px]">save</span>
-        <span>Kaydet ve Defterine Ekle</span>
+      <button type="submit" id="btn-kaydet" class="btn-primary" style="margin-top:0.5rem;">
+        <span class="material-symbols-outlined">save</span>
+        <span>Kaydet</span>
       </button>
     </form>
   </main>
 
-  <!-- ===== EKRAN 3: KAYIT DETAY ===== -->
-  <main id="ekran-detay" class="ekran w-full px-margin pt-14 pb-24 flex-col gap-space-md bg-surface overflow-y-auto">
-
-    <!-- Üst Bar -->
-    <div class="flex items-center justify-between pt-space-sm">
-      <button id="btn-detay-geri"
-        class="btn-geri flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface text-label-md active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[16px] text-primary">arrow_back</span>
+  <!-- ===== EKRAN 3: DETAY EKRANI ===== -->
+  <main id="ekran-detay" class="ekran">
+    <div style="margin-bottom:1rem;">
+      <button id="btn-detay-geri" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
         <span>Geri</span>
       </button>
     </div>
 
-    <!-- Detay içerik alanı (JS doldurur) -->
-    <article id="detay-icerik" class="flex flex-col gap-space-sm"></article>
+    <article id="detay-icerik"></article>
 
-    <!-- Aksiyon Butonları -->
-    <div class="detay-butonlar flex flex-col gap-space-sm pb-2">
-      <div class="grid grid-cols-5 gap-space-sm">
-        <button id="btn-tekrar"
-          class="col-span-3 h-12 flex items-center justify-center gap-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md font-semibold active:scale-95 transition-all shadow-md">
-          <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">sync</span>
-          <span>Bu yine oldu</span>
-        </button>
-        <button id="btn-sabitle"
-          class="col-span-2 h-12 flex items-center justify-center gap-2 rounded-xl bg-surface-container-high text-on-surface font-label-md text-label-md active:scale-95 transition-all">
-          <span class="material-symbols-outlined text-[20px] text-tertiary">push_pin</span>
-          <span>Sabitle</span>
-        </button>
-      </div>
-      <div class="grid grid-cols-3 gap-space-sm">
-        <button id="btn-duzenle"
-          class="h-10 flex items-center justify-center gap-1.5 rounded-lg bg-surface-container text-on-surface text-label-sm active:scale-95 transition-all hover:bg-surface-container-high">
-          <span class="material-symbols-outlined text-[16px] text-secondary">edit</span>
-          <span>Düzenle</span>
-        </button>
-        <button id="btn-yazdir"
-          class="h-10 flex items-center justify-center gap-1.5 rounded-lg bg-surface-container text-on-surface text-label-sm active:scale-95 transition-all hover:bg-surface-container-high">
-          <span class="material-symbols-outlined text-[16px] text-primary">print</span>
-          <span>Yazdır</span>
-        </button>
-        <button id="btn-sil"
-          class="h-10 flex items-center justify-center gap-1.5 rounded-lg bg-surface-container text-error text-label-sm active:scale-95 transition-all hover:bg-error-container/20">
-          <span class="material-symbols-outlined text-[16px]">delete</span>
-          <span>Sil</span>
-        </button>
-      </div>
+    <div class="detay-butonlar">
+      <button id="btn-tekrar" class="btn-primary">
+        <span class="material-symbols-outlined">sync</span>
+        <span>Bu yine oldu</span>
+      </button>
+      <button id="btn-sabitle" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">push_pin</span>
+        <span>Sabitle</span>
+      </button>
+    </div>
+
+    <div class="detay-butonlar" style="margin-top:0.5rem;">
+      <button id="btn-duzenle" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
+        <span>Düzenle</span>
+      </button>
+      <button id="btn-yazdir" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">print</span>
+        <span>Yazdır</span>
+      </button>
+      <button id="btn-sil" class="btn-secondary btn-danger">
+        <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
+        <span>Sil</span>
+      </button>
     </div>
   </main>
 
-  <!-- ===== EKRAN 4: AYARLAR ===== -->
-  <main id="ekran-ayarlar" class="ekran w-full px-margin pt-14 pb-24 flex-col gap-space-lg bg-surface overflow-y-auto">
-
-    <!-- Üst Bar -->
-    <div class="flex items-center justify-between pt-space-sm">
-      <button id="btn-ayarlar-geri"
-        class="btn-geri flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface text-label-md active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[16px] text-primary">arrow_back</span>
+  <!-- ===== EKRAN 4: İSTATİSTİK ===== -->
+  <main id="ekran-istatistik" class="ekran">
+    <div style="margin-bottom:1rem;">
+      <button id="btn-istatistik-geri" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
         <span>Geri</span>
       </button>
     </div>
 
-    <div class="flex items-center gap-space-sm">
-      <span class="material-symbols-outlined text-primary text-[26px]">tune</span>
-      <h1 class="font-headline text-head-lg text-on-surface font-bold">Ayarlar</h1>
+    <div class="hero-box" style="margin-bottom:1.2rem;">
+      <div>
+        <h1 style="font-size:1.35rem;">İstatistikler</h1>
+        <p>Arıza ve çözüm genel analizi</p>
+      </div>
     </div>
 
-    <!-- Görünüm -->
-    <section class="flex flex-col gap-space-sm">
-      <div class="flex items-center gap-space-xs px-space-xs">
-        <span class="material-symbols-outlined text-primary text-[16px]">palette</span>
-        <span class="text-label-sm uppercase tracking-wider text-primary font-semibold">Görünüm & Tema</span>
+    <div id="ist-ozet" class="ist-ozet"></div>
+
+    <div class="form-box">
+      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">Kategoriye Göre</h3>
+      <div id="ist-kategori"></div>
+    </div>
+
+    <div class="form-box">
+      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">Duruma Göre</h3>
+      <div id="ist-durum"></div>
+    </div>
+
+    <div class="form-box">
+      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">En Çok Tekrar Eden</h3>
+      <div id="ist-tekrar"></div>
+    </div>
+
+    <div class="form-box">
+      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">Aylık Kayıt Sayısı</h3>
+      <div id="ist-aylik"></div>
+    </div>
+  </main>
+
+  <!-- ===== EKRAN 5: AYARLAR ===== -->
+  <main id="ekran-ayarlar" class="ekran">
+    <div style="margin-bottom:1rem;">
+      <button id="btn-ayarlar-geri" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+        <span>Geri</span>
+      </button>
+    </div>
+
+    <h1 style="font-size:1.35rem; font-weight:800; margin-bottom:1rem;">Ayarlar</h1>
+
+    <div class="form-box">
+      <h3 style="font-size:0.9rem; font-weight:700;">Görünüm</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Karanlık ve aydınlık tema arasında geçiş yapın.</p>
+      <button id="btn-tema-ayar" class="btn-secondary">
+        <span class="material-symbols-outlined" style="font-size:18px;">dark_mode</span>
+        <span>Karanlık Tema</span>
+      </button>
+    </div>
+
+    <div class="form-box">
+      <h3 style="font-size:0.9rem; font-weight:700;">Yedekleme</h3>
+      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">Kayıtlarını JSON veya CSV olarak dışa aktar ya da yedeği geri yükle.</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
+        <button id="btn-disa-aktar" class="btn-secondary" style="justify-content:center;">JSON Dışa Aktar</button>
+        <button id="btn-csv-aktar" class="btn-secondary" style="justify-content:center;">CSV Dışa Aktar</button>
       </div>
-      <div class="bg-surface-container rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
-        <div class="flex items-center justify-between">
-          <div class="flex flex-col">
-            <span class="font-headline text-head-sm text-on-surface">Tema Seçimi</span>
-            <span class="text-body-sm text-on-surface-variant">Karanlık veya aydınlık mod</span>
-          </div>
-          <span class="material-symbols-outlined text-secondary text-[20px]">brightness_medium</span>
-        </div>
-        <div class="ayar-butonlar flex gap-space-sm flex-wrap">
-          <button id="btn-tema-ayar"
-            class="flex items-center gap-2 px-4 py-2 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-label-md active:scale-95 transition-all">
-            <span class="material-symbols-outlined text-[18px]">dark_mode</span>
-            <span>Karanlık Tema</span>
-          </button>
-        </div>
-      </div>
-    </section>
 
-    <!-- Yedekleme -->
-    <section class="flex flex-col gap-space-sm">
-      <div class="flex items-center gap-space-xs px-space-xs">
-        <span class="material-symbols-outlined text-secondary text-[16px]">database</span>
-        <span class="text-label-sm uppercase tracking-wider text-secondary font-semibold">Yedekleme & Veri</span>
-      </div>
-      <div class="bg-surface-container rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
+      <div style="border-top:1px solid var(--border-color); padding-top:1rem;">
+        <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;">İçe Aktar</h4>
+        <input type="file" id="f-yedek-dosya" accept=".json,.csv" style="margin-bottom:0.75rem;">
 
-        <!-- Bilgi -->
-        <div class="flex items-start gap-space-sm bg-surface-container-lowest p-space-sm rounded-lg">
-          <span class="material-symbols-outlined text-primary text-[20px] shrink-0">backup</span>
-          <p class="text-body-sm text-on-surface-variant">
-            Kayıtlarını JSON dosyası olarak dışa aktar veya yedeği geri yükle. Haftada bir yedek almayı unutma.
-          </p>
-        </div>
-
-        <!-- Dışa aktar butonları -->
-        <div class="grid grid-cols-2 gap-space-sm">
-          <button id="btn-disa-aktar"
-            class="flex items-center justify-center gap-space-xs py-space-sm px-space-sm bg-surface-container-high hover:bg-surface-container-highest active:scale-95 rounded-lg text-primary text-label-md transition-all shadow-sm">
-            <span class="material-symbols-outlined text-[18px]">file_download</span>
-            <span>JSON Dışa Aktar</span>
-          </button>
-          <button id="btn-csv-aktar"
-            class="flex items-center justify-center gap-space-xs py-space-sm px-space-sm bg-surface-container-high hover:bg-surface-container-highest active:scale-95 rounded-lg text-on-surface-variant hover:text-on-surface text-label-md transition-all shadow-sm">
-            <span class="material-symbols-outlined text-[18px]">table_view</span>
-            <span>CSV Dışa Aktar</span>
-          </button>
-        </div>
-
-        <div class="w-full h-px bg-surface-container-highest"></div>
-
-        <!-- İçe aktar -->
-        <div class="flex flex-col gap-space-sm">
-          <span class="font-headline text-head-sm text-on-surface">Yedekten Geri Yükle</span>
-
-          <label for="f-yedek-dosya"
-            class="flex flex-col items-center justify-center p-space-md bg-surface-container-lowest hover:bg-surface-container-low rounded-lg cursor-pointer transition-colors group">
-            <span class="material-symbols-outlined text-secondary text-[26px] mb-space-xs group-hover:scale-110 transition-transform">upload_file</span>
-            <span class="text-label-md text-on-surface">Dosya seç (.json veya .csv)</span>
-            <span class="text-body-sm text-on-surface-variant mt-0.5">Yerel — veriler dışarı çıkmaz</span>
-            <input type="file" id="f-yedek-dosya" accept=".json,.csv" class="hidden">
+        <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.75rem; font-size:0.85rem;">
+          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+            <input type="radio" name="ice-aktar-mod" value="birlestir" checked>
+            <span>Birleştir (mevcut kayıtların üstüne ekle)</span>
           </label>
-
-          <!-- Mod seçimi -->
-          <div class="flex flex-col gap-space-xs">
-            <label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors">
-              <input type="radio" name="ice-aktar-mod" value="birlestir" checked class="accent-primary w-4 h-4">
-              <div class="flex flex-col">
-                <span class="text-label-md text-on-surface font-semibold">Birleştir</span>
-                <span class="text-body-sm text-on-surface-variant">Mevcut kayıtların üstüne ekle</span>
-              </div>
-            </label>
-            <label class="flex items-center gap-space-sm p-space-sm rounded-lg bg-surface-container-low cursor-pointer hover:bg-surface-container-high transition-colors">
-              <input type="radio" name="ice-aktar-mod" value="uzerineYaz" class="accent-primary w-4 h-4">
-              <div class="flex flex-col">
-                <span class="text-label-md text-error font-semibold">Üzerine Yaz</span>
-                <span class="text-body-sm text-on-surface-variant">Önce sil, sonra yükle</span>
-              </div>
-            </label>
-          </div>
-
-          <button id="btn-ice-aktar"
-            class="w-full flex items-center justify-center gap-space-xs py-space-sm px-space-md bg-primary hover:bg-primary-container text-on-primary text-label-md font-semibold uppercase tracking-wider rounded-lg active:scale-[0.98] transition-all shadow-md">
-            <span class="material-symbols-outlined text-[18px]">history</span>
-            <span>İçe Aktar</span>
-          </button>
+          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
+            <input type="radio" name="ice-aktar-mod" value="uzerineYaz">
+            <span style="color:var(--badge-red-text);">Üzerine yaz (önce sil, sonra yükle)</span>
+          </label>
         </div>
 
-        <div id="yedek-sonuc" class="text-body-sm"></div>
+        <button id="btn-ice-aktar" class="btn-primary">İçe Aktar</button>
+        <div id="yedek-sonuc" style="margin-top:0.75rem; font-size:0.82rem;"></div>
       </div>
-    </section>
-
-    <!-- Uygulama Hakkında -->
-    <section class="flex flex-col gap-space-sm">
-      <div class="flex items-center gap-space-xs px-space-xs">
-        <span class="material-symbols-outlined text-on-surface-variant text-[16px]">terminal</span>
-        <span class="text-label-sm uppercase tracking-wider text-on-surface-variant font-semibold">Uygulama Hakkında</span>
-      </div>
-      <div class="bg-surface-container rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
-        <div class="flex items-center gap-space-md">
-          <span class="material-symbols-outlined text-primary text-[40px]">book_2</span>
-          <div class="flex flex-col min-w-0">
-            <div class="flex items-center gap-space-xs">
-              <span class="font-headline text-head-sm text-on-surface">Çözüm Defteri</span>
-              <span class="px-1.5 py-0.5 rounded bg-primary/20 text-primary text-label-sm uppercase">PWA</span>
-            </div>
-            <p class="text-body-sm text-on-surface-variant mt-0.5">Tek kişilik IT arıza çözüm kütüphanesi.</p>
-          </div>
-        </div>
-        <div class="flex items-start gap-space-sm bg-surface-container-low p-space-sm rounded-lg">
-          <span class="w-2.5 h-2.5 rounded-full bg-secondary mt-0.5 shrink-0 shadow-[0_0_8px_rgba(123,208,255,0.8)]"></span>
-          <div class="flex flex-col">
-            <span class="text-label-md text-on-surface font-semibold">Çevrimdışı Hazır</span>
-            <span class="text-body-sm text-on-surface-variant">Service Worker devrede, veriler yalnızca bu cihazda kalır.</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ===== EKRAN 5: İSTATİSTİK ===== -->
-  <main id="ekran-istatistik" class="ekran w-full px-margin pt-14 pb-24 flex-col gap-space-lg bg-surface overflow-y-auto">
-
-    <!-- Üst Bar -->
-    <div class="flex items-center justify-between pt-space-sm">
-      <button id="btn-istatistik-geri"
-        class="btn-geri flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-high text-on-surface text-label-md active:scale-95 transition-all">
-        <span class="material-symbols-outlined text-[16px] text-primary">arrow_back</span>
-        <span>Geri</span>
-      </button>
     </div>
-
-    <div class="flex flex-col">
-      <h1 class="font-headline text-head-lg text-on-surface font-bold tracking-tight">İstatistikler</h1>
-      <p class="text-body-sm text-on-surface-variant">Arıza ve çözüm dağılımı</p>
-    </div>
-
-    <!-- Özet Kartlar (JS doldurur) -->
-    <div id="ist-ozet" class="grid grid-cols-2 gap-gutter"></div>
-
-    <!-- Kategoriye Göre -->
-    <div class="bg-surface-container rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
-      <div class="flex items-center gap-space-xs">
-        <span class="material-symbols-outlined text-primary text-[18px]">category</span>
-        <h2 class="font-headline text-head-sm text-on-surface uppercase tracking-wider">Kategoriye Göre</h2>
-      </div>
-      <div id="ist-kategori" class="flex flex-col gap-space-sm"></div>
-    </div>
-
-    <!-- Duruma Göre -->
-    <div class="bg-surface-container rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
-      <div class="flex items-center gap-space-xs">
-        <span class="material-symbols-outlined text-secondary text-[18px]">donut_large</span>
-        <h2 class="font-headline text-head-sm text-on-surface uppercase tracking-wider">Duruma Göre</h2>
-      </div>
-      <div id="ist-durum" class="flex flex-col gap-space-sm"></div>
-    </div>
-
-    <!-- En Çok Tekrar Eden -->
-    <div class="bg-surface-container rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-space-xs">
-          <span class="material-symbols-outlined text-tertiary text-[18px]">radar</span>
-          <h2 class="font-headline text-head-sm text-on-surface uppercase tracking-wider">En Çok Tekrar Eden</h2>
-        </div>
-        <span class="text-label-sm text-on-surface-variant font-mono">TOP 5</span>
-      </div>
-      <div id="ist-tekrar" class="flex flex-col gap-space-xs"></div>
-    </div>
-
-    <!-- Aylık -->
-    <div class="bg-surface-container rounded-xl p-space-md shadow-md flex flex-col gap-space-md">
-      <div class="flex items-center gap-space-xs">
-        <span class="material-symbols-outlined text-primary text-[18px]">stacked_bar_chart</span>
-        <h2 class="font-headline text-head-sm text-on-surface uppercase tracking-wider">Aylık Kayıt Sayısı</h2>
-      </div>
-      <div id="ist-aylik" class="flex flex-col gap-space-sm"></div>
-    </div>
-
   </main>
 
   <!-- ===== ALT NAVİGASYON BARI ===== -->
-  <nav id="alt-bar" class="fixed bottom-0 w-full max-w-[600px] z-50 pb-safe bg-surface-container/90 backdrop-blur-xl">
-    <div class="flex justify-around items-center h-16 px-space-xs">
-      <button class="alt-bar-btn aktif flex flex-col items-center justify-center gap-space-xs w-16 h-14 transition-transform active:scale-95 text-primary" data-ekran="ekran-liste" id="bar-ana">
-        <span class="material-symbols-outlined text-[22px]">home</span>
-        <span class="text-label-sm">Ana Sayfa</span>
+  <nav id="alt-bar" class="app-bottom-bar">
+    <div class="bottom-bar-content">
+      <button class="alt-bar-btn aktif" data-ekran="ekran-liste" id="bar-ana">
+        <span class="material-symbols-outlined">home</span>
+        <span>Ana Sayfa</span>
       </button>
-      <button class="alt-bar-btn flex flex-col items-center justify-center gap-space-xs w-16 h-14 text-on-surface-variant transition-transform active:scale-95" data-ekran="ekran-form" id="bar-yeni">
-        <span class="material-symbols-outlined text-[22px]">add_circle</span>
-        <span class="text-label-sm">Yeni Kayıt</span>
+      <button class="alt-bar-btn" data-ekran="ekran-form" id="bar-yeni">
+        <span class="material-symbols-outlined">add_circle</span>
+        <span>Yeni Kayıt</span>
       </button>
-      <button class="alt-bar-btn flex flex-col items-center justify-center gap-space-xs w-16 h-14 text-on-surface-variant transition-transform active:scale-95" data-ekran="ekran-istatistik" id="bar-istatistik">
-        <span class="material-symbols-outlined text-[22px]">bar_chart</span>
-        <span class="text-label-sm">İstatistik</span>
+      <button class="alt-bar-btn" data-ekran="ekran-istatistik" id="bar-istatistik">
+        <span class="material-symbols-outlined">bar_chart</span>
+        <span>İstatistik</span>
       </button>
-      <button class="alt-bar-btn flex flex-col items-center justify-center gap-space-xs w-16 h-14 text-on-surface-variant transition-transform active:scale-95" data-ekran="ekran-ayarlar" id="bar-ayarlar">
-        <span class="material-symbols-outlined text-[22px]">settings</span>
-        <span class="text-label-sm">Ayarlar</span>
+      <button class="alt-bar-btn" data-ekran="ekran-ayarlar" id="bar-ayarlar">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Ayarlar</span>
       </button>
     </div>
   </nav>
 
-</div><!-- /max-w-[600px] -->
+</div>
 
 <!-- JS modülleri -->
 <script src="https://cdn.jsdelivr.net/npm/dexie@4.0.8/dist/dexie.min.js"></script>
