@@ -303,31 +303,59 @@ async function detayGoster(id) {
   if (!kayit) return;
 
   const icerik = document.getElementById('detay-icerik');
-  let html = `<h3>${htmlKacis(kayit.baslik)}</h3>`;
+  let html = '';
 
+  // Başlık + meta badges
+  html += `
+    <div class="flex flex-col gap-2 pb-space-xs">
+      <h2 class="font-headline text-[1.2rem] font-semibold text-on-surface leading-tight">${htmlKacis(kayit.baslik)}</h2>
+      <div class="flex flex-wrap gap-1.5 items-center">
+        ${kayit.kategori ? `<span class="kategori-etiket">${htmlKacis(kayit.kategori)}</span>` : ''}
+        ${kayit.durum === 'Açık' ? '<span class="durum-badge durum-acik">Açık</span>' :
+          kayit.durum === 'Geçici çözüm' ? '<span class="durum-badge durum-gecici">Geçici</span>' :
+          '<span style="font-size:0.6875rem;color:#89929b;">✅ Çözüldü</span>'}
+        ${(kayit.tekrarSayisi > 1) ? `<span class="tekrar-badge">🔄 ${kayit.tekrarSayisi}x tekrar</span>` : ''}
+        ${kayit.sure ? `<span style="font-size:0.6875rem;color:#89929b;font-family:JetBrains Mono,monospace;">⏱ ${kayit.sure} dk</span>` : ''}
+        <span style="font-size:0.6875rem;color:#89929b;">📅 ${tarihFormatla(kayit.tarih)}</span>
+      </div>
+    </div>
+  `;
+
+  // Çözüm — en önemli, öne çıkar
+  if (kayit.cozum) {
+    html += `<div class="detay-alan alan-cozum">
+      <strong><span class="material-symbols-outlined" style="font-size:0.9rem;">verified</span>ÇÖZÜM PROSEDÜRÜ</strong>
+      <div class="alan-deger">${htmlKacis(kayit.cozum)}</div>
+    </div>`;
+  }
+
+  // Diğer alanlar
   const alanlar = [
-    { etiket: 'Kategori', deger: kayit.kategori },
-    { etiket: 'Durum', deger: kayit.durum },
-    { etiket: 'Belirti', deger: kayit.belirti },
-    { etiket: 'Çözüm', deger: kayit.cozum },
-    { etiket: 'Sebep', deger: kayit.sebep },
-    { etiket: 'Cihaz', deger: kayit.cihaz },
-    { etiket: 'Hata Kodu', deger: kayit.hataKodu },
-    { etiket: 'Kullanıcı / Bölüm', deger: kayit.kullaniciBolum },
-    { etiket: 'Etiketler', deger: Array.isArray(kayit.etiketler) ? kayit.etiketler.join(', ') : kayit.etiketler },
-    { etiket: 'Süre', deger: kayit.sure ? kayit.sure + ' dk' : null },
-    { etiket: 'Tarih', deger: tarihFormatla(kayit.tarih) },
-    { etiket: 'Tekrar', deger: kayit.tekrarSayisi > 1 ? kayit.tekrarSayisi + ' kez' : null },
+    { etiket: 'BELİRTİ',        ikon: 'visibility',     deger: kayit.belirti },
+    { etiket: 'SEBEP',           ikon: 'report_problem', deger: kayit.sebep },
+    { etiket: 'CİHAZ',           ikon: 'devices',        deger: kayit.cihaz },
+    { etiket: 'HATA KODU',       ikon: 'error',          deger: kayit.hataKodu },
+    { etiket: 'KULLANICI/BÖLÜM', ikon: 'badge',          deger: kayit.kullaniciBolum },
+    { etiket: 'ETİKETLER',       ikon: 'label',          deger: Array.isArray(kayit.etiketler) ? kayit.etiketler.join(', ') : kayit.etiketler },
   ];
 
   alanlar.forEach(a => {
     if (a.deger) {
-      html += `<div class="detay-alan"><strong>${a.etiket}</strong>${htmlKacis(String(a.deger))}</div>`;
+      html += `<div class="detay-alan">
+        <strong><span class="material-symbols-outlined" style="font-size:0.9rem;">${a.ikon}</span>${a.etiket}</strong>
+        <div class="alan-deger">${htmlKacis(String(a.deger))}</div>
+      </div>`;
     }
   });
 
+  // Fotoğraf
   if (kayit.fotograf) {
-    html += `<div class="detay-alan"><strong>Fotoğraf</strong><img src="${kayit.fotograf}" alt="Kayıt fotoğrafı" style="max-width:100%; border-radius:var(--pico-border-radius); margin-top:0.3rem; cursor:pointer;" onclick="window.open(this.src)"></div>`;
+    html += `<div class="detay-alan">
+      <strong><span class="material-symbols-outlined" style="font-size:0.9rem;">attachment</span>SAHA GÖRSELİ</strong>
+      <img src="${kayit.fotograf}" alt="Kayıt fotoğrafı"
+        style="max-width:100%; border-radius:0.5rem; margin-top:0.4rem; cursor:pointer;"
+        onclick="window.open(this.src)">
+    </div>`;
   }
 
   icerik.innerHTML = html;
@@ -562,8 +590,9 @@ function olaylariKur() {
   // Arama kutusu odaklanınca geçmişi göster
   document.getElementById('arama-kutusu').addEventListener('focus', aramaGecmisiniGoster);
 
-  // Karanlık tema butonu
+  // Karanlık tema butonları (hem header hem ayarlar)
   document.getElementById('btn-tema').addEventListener('click', temaToggle);
+  document.getElementById('btn-tema-ayar').addEventListener('click', temaToggle);
 
   // İstatistik ve ayarlar geri butonları
   document.getElementById('btn-istatistik-geri').addEventListener('click', () => {
@@ -798,30 +827,42 @@ function fotografTemizle() {
 
 // ===== KARANLIK TEMA =====
 function temaYukle() {
-  const tema = localStorage.getItem('cozum-defteri-tema');
-  if (tema === 'dark') {
-    document.documentElement.setAttribute('data-theme', 'dark');
+  const tema = localStorage.getItem('cozum-defteri-tema') || 'dark';
+  if (tema === 'light') {
+    document.documentElement.classList.remove('dark');
+  } else {
+    document.documentElement.classList.add('dark');
   }
   temaButonGuncelle();
 }
 
 function temaToggle() {
-  const suAnki = document.documentElement.getAttribute('data-theme');
-  if (suAnki === 'dark') {
-    document.documentElement.removeAttribute('data-theme');
+  const karanlik = document.documentElement.classList.contains('dark');
+  if (karanlik) {
+    document.documentElement.classList.remove('dark');
     localStorage.setItem('cozum-defteri-tema', 'light');
   } else {
-    document.documentElement.setAttribute('data-theme', 'dark');
+    document.documentElement.classList.add('dark');
     localStorage.setItem('cozum-defteri-tema', 'dark');
   }
   temaButonGuncelle();
 }
 
 function temaButonGuncelle() {
-  const btn = document.getElementById('btn-tema');
-  if (!btn) return;
-  const karanlik = document.documentElement.getAttribute('data-theme') === 'dark';
-  btn.textContent = karanlik ? 'Aydınlık Tema' : 'Karanlık Tema';
+  // Ana header tema butonu (ikon)
+  const ikonEl = document.getElementById('tema-ikon');
+  if (ikonEl) {
+    const karanlik = document.documentElement.classList.contains('dark');
+    ikonEl.textContent = karanlik ? 'light_mode' : 'dark_mode';
+  }
+  // Ayarlar ekranındaki buton
+  const btnAyar = document.getElementById('btn-tema-ayar');
+  if (btnAyar) {
+    const karanlik = document.documentElement.classList.contains('dark');
+    btnAyar.innerHTML = karanlik
+      ? '<span class="material-symbols-outlined text-[18px]">light_mode</span><span>Aydınlık Tema</span>'
+      : '<span class="material-symbols-outlined text-[18px]">dark_mode</span><span>Karanlık Tema</span>';
+  }
 }
 
 // ===== ARAMA GEÇMİŞİ =====
@@ -879,11 +920,15 @@ async function istatistikGoster() {
   const toplamTekrar = tumKayitlar.reduce((t, k) => t + (k.tekrarSayisi || 1), 0);
   const acikSorun = tumKayitlar.filter(k => k.durum === 'Açık' || k.durum === 'Geçici çözüm').length;
 
+  // Hero sayaç güncelle
+  const heroSayi = document.getElementById('hero-kayit-sayi');
+  if (heroSayi) heroSayi.textContent = `${toplam} kayıt`;
+
   // Özet kartları
   document.getElementById('ist-ozet').innerHTML = `
     <div class="ist-kart"><span class="sayi">${toplam}</span><span class="etiket">Toplam Kayıt</span></div>
     <div class="ist-kart"><span class="sayi">${acikSorun}</span><span class="etiket">Açık / Geçici</span></div>
-    <div class="ist-kart"><span class="sayi">${toplamSure}</span><span class="etiket">Toplam dk</span></div>
+    <div class="ist-kart"><span class="sayi">${toplamSure > 0 ? toplamSure : '—'}</span><span class="etiket">Toplam dk</span></div>
     <div class="ist-kart"><span class="sayi">${toplamTekrar}</span><span class="etiket">Toplam Tekrar</span></div>
   `;
 
@@ -916,12 +961,20 @@ async function istatistikGoster() {
     .slice(0, 10);
 
   if (tekrarlilar.length === 0) {
-    document.getElementById('ist-tekrar').innerHTML = '<p><small>Henüz tekrar eden sorun yok.</small></p>';
+    document.getElementById('ist-tekrar').innerHTML = '<p class="text-body-sm text-on-surface-variant">Henüz tekrar eden sorun yok.</p>';
   } else {
-    document.getElementById('ist-tekrar').innerHTML = '<ul class="ist-tekrar-liste">' +
-      tekrarlilar.map(k =>
-        `<li><span>${htmlKacis(k.baslik)}</span><strong>${k.tekrarSayisi}x</strong></li>`
-      ).join('') + '</ul>';
+    document.getElementById('ist-tekrar').innerHTML = tekrarlilar.map((k, i) =>
+      `<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-lg hover:bg-surface-container-high transition-colors" style="cursor:pointer;" onclick="">
+        <div class="flex items-center gap-space-sm min-w-0">
+          <span style="font-size:0.6875rem;color:#93ccff;font-weight:700;font-family:JetBrains Mono,monospace;width:1.5rem;">0${i+1}</span>
+          <div class="flex flex-col min-w-0">
+            <span class="text-body-md text-on-surface font-medium truncate">${htmlKacis(k.baslik)}</span>
+            ${k.kategori ? `<span class="text-label-sm text-on-surface-variant">${htmlKacis(k.kategori)}</span>` : ''}
+          </div>
+        </div>
+        <span style="padding:0.15rem 0.5rem;border-radius:9999px;background:rgba(147,204,255,0.15);color:#93ccff;font-size:0.6875rem;font-weight:700;white-space:nowrap;">${k.tekrarSayisi}x tekrar</span>
+      </div>`
+    ).join('');
   }
 
   // Aylık kayıt sayısı (son 6 ay)
@@ -945,9 +998,14 @@ async function istatistikGoster() {
 
 function cubukHTML(etiket, sayi, maks) {
   const yuzde = Math.round((sayi / maks) * 100);
-  return `<div class="ist-cubuk-wrap">
-    <div class="ist-cubuk-baslik"><span>${htmlKacis(etiket)}</span><span>${sayi}</span></div>
-    <div class="ist-cubuk"><div class="ist-cubuk-dolu" style="width:${yuzde}%"></div></div>
+  return `<div class="flex flex-col gap-1">
+    <div class="flex justify-between items-center" style="font-size:0.75rem;">
+      <span style="color:#dae2fd;">${htmlKacis(etiket)}</span>
+      <span style="color:#7bd0ff;font-weight:600;">${sayi}</span>
+    </div>
+    <div style="height:0.5rem;width:100%;background:#131b2e;border-radius:9999px;overflow:hidden;">
+      <div style="height:100%;width:${yuzde}%;background:linear-gradient(90deg,#93ccff,#7bd0ff);border-radius:9999px;transition:width 0.4s ease;"></div>
+    </div>
   </div>`;
 }
 
