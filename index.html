@@ -1,335 +1,455 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html class="light" lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
   <title>Çözüm Defteri</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#2563eb">
+  <meta name="theme-color" content="#1d4ed8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Çözüm Defteri">
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
 
-  <!-- İkonlar (Google Fonts Material Symbols) -->
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <!-- Stitch Fontları: Space Grotesk + Manrope -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
 
-  <!-- Ana Stil Dosyası -->
-  <link rel="stylesheet" href="style.css">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          fontFamily: {
+            headline: ["Space Grotesk", "sans-serif"],
+            body: ["Manrope", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    @layer base {
+      html, body {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Manrope', sans-serif;
+        -webkit-tap-highlight-color: transparent;
+      }
+      .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+      .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+    }
+    ::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Ekran geçişleri */
+    .ekran { display: none !important; }
+    .ekran.aktif { display: flex !important; }
+
+    /* SVG İkon Boyut Sabitleme */
+    svg.kategori-grup-ikon, .kategori-grup-ikon {
+      width: 18px !important;
+      height: 18px !important;
+      max-width: 18px !important;
+      max-height: 18px !important;
+      min-width: 18px !important;
+      min-height: 18px !important;
+      display: inline-block !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* Alt Navigasyon Aktif Buton */
+    .alt-bar-btn.aktif {
+      color: #2563eb !important;
+      font-weight: 700 !important;
+    }
+    .dark .alt-bar-btn.aktif {
+      color: #60a5fa !important;
+    }
+    .alt-bar-btn.aktif .material-symbols-outlined {
+      font-variation-settings: 'FILL' 1;
+    }
+  </style>
 </head>
 
-<body>
-<div class="app-wrapper">
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen flex justify-center selection:bg-blue-500 selection:text-white">
+<div class="w-full max-w-[600px] min-h-screen flex flex-col relative bg-white dark:bg-slate-900 shadow-xl">
 
-  <!-- ===== ÜST SABİT BAŞLIK ===== -->
-  <header class="app-header">
-    <div class="header-content">
-      <div class="brand-badge">
-        <span class="material-symbols-outlined" style="color:var(--accent); font-size:24px;">book_2</span>
-        <span class="brand-title">Çözüm Defteri</span>
+  <!-- ===== ÜST SABİT HEADER ===== -->
+  <header class="fixed top-0 w-full max-w-[600px] z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 pt-safe">
+    <div class="h-14 px-4 flex items-center justify-between">
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-sm">
+          <span class="material-symbols-outlined text-[19px]">terminal</span>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-headline text-[1.1rem] font-bold tracking-tight text-slate-900 dark:text-white leading-none">Çözüm Defteri</span>
+          <span class="text-[10px] font-semibold text-blue-600 dark:text-blue-400 tracking-wider uppercase mt-0.5">Saha Günlüğü</span>
+        </div>
       </div>
-      <button id="btn-tema" class="btn-icon" aria-label="Tema Değiştir">
-        <span class="material-symbols-outlined" id="tema-ikon" style="font-size:20px;">dark_mode</span>
+      <button id="btn-tema" class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 active:scale-95 transition-all" aria-label="Tema Değiştir">
+        <span class="material-symbols-outlined text-[20px]" id="tema-ikon">dark_mode</span>
       </button>
     </div>
   </header>
 
   <!-- ===== EKRAN 1: ANA SAYFA (LİSTE & ARAMA) ===== -->
-  <main id="ekran-liste" class="ekran aktif">
-    <!-- Hero Başlık & Sayaç -->
-    <div class="hero-box">
+  <main id="ekran-liste" class="ekran aktif flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+    
+    <!-- Hero & Sayaç -->
+    <div class="flex items-center justify-between pt-2">
       <div>
-        <h1>Çözüm Defteri</h1>
-        <p>Çözülen sorunları kaydet, kolayca bul</p>
+        <h1 class="font-headline text-[1.35rem] font-bold text-slate-900 dark:text-white tracking-tight">Çözüm Defteri</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Çözülen sorunları kaydet, kolayca bul</p>
       </div>
-      <div class="hero-counter">
-        <span class="pulse-dot"></span>
+      <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold shadow-xs">
+        <span class="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
         <span id="hero-kayit-sayi">— kayıt</span>
       </div>
     </div>
 
-    <!-- Arama -->
-    <div class="search-wrapper">
-      <span class="material-symbols-outlined search-icon">search</span>
-      <input type="search" id="arama-kutusu" placeholder="Sorun ara... (ör: yazıcı soluk)">
+    <!-- Arama Çubuğu -->
+    <div class="relative w-full">
+      <div class="flex items-center bg-slate-100 dark:bg-slate-800/80 rounded-full px-3.5 py-2.5 gap-2.5 border border-slate-200 dark:border-slate-700 shadow-sm focus-within:ring-2 focus-within:ring-blue-500 transition-all">
+        <span class="material-symbols-outlined text-[20px] text-blue-600 dark:text-blue-400">search</span>
+        <input class="w-full bg-transparent border-0 p-0 text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none text-sm font-medium" id="arama-kutusu" placeholder="Sorun ara... (ör: yazıcı soluk)" type="search"/>
+      </div>
     </div>
 
     <!-- Arama Geçmişi -->
-    <div id="arama-gecmisi" class="arama-gecmisi" style="display:none;"></div>
+    <div id="arama-gecmisi" class="flex flex-wrap gap-1.5 text-xs" style="display:none;"></div>
 
     <!-- Kategori Çipleri -->
-    <div id="kategori-cipler" class="cipler"></div>
+    <div id="kategori-cipler" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-0.5"></div>
 
     <!-- Kayıt Listesi -->
-    <section id="kayit-listesi">
-      <p class="bos-mesaj">Henüz kayıt yok. Alttaki "Yeni Kayıt" butonuyla ilk kaydını ekle.</p>
+    <section id="kayit-listesi" class="flex flex-col gap-2.5 pb-4">
+      <p class="bos-mesaj text-center text-slate-400 py-12 text-sm">Henüz kayıt yok. Alttaki "Yeni Kayıt" butonuyla ilk kaydını ekle.</p>
     </section>
 
     <!-- Daha Fazla Yükle Butonu -->
-    <div id="daha-fazla-wrap" style="display:none; text-align:center; margin-top:1rem;">
-      <button id="btn-daha-fazla" class="btn-secondary" style="width:100%; justify-content:center; padding:0.75rem;">
-        <span class="material-symbols-outlined" style="font-size:18px;">expand_more</span>
-        <span>Daha fazla yükle</span>
+    <div id="daha-fazla-wrap" style="display:none;" class="flex justify-center pb-4">
+      <button id="btn-daha-fazla" class="w-full py-2.5 px-4 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-blue-600 dark:text-blue-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm">
+        <span class="material-symbols-outlined text-[18px]">expand_more</span>
+        <span>Daha fazla kayıt yükle</span>
       </button>
     </div>
   </main>
 
   <!-- ===== EKRAN 2: YENİ KAYIT / DÜZENLE ===== -->
-  <main id="ekran-form" class="ekran">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
-      <button id="btn-form-geri" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+  <main id="ekran-form" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+    <div class="flex items-center justify-between pt-1">
+      <button id="btn-form-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
+        <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
         <span>Geri</span>
       </button>
-      <h2 id="form-baslik" style="font-size:1.15rem; font-weight:800;">Yeni Kayıt</h2>
+      <h2 id="form-baslik" class="font-headline text-base font-bold text-slate-900 dark:text-white">Yeni Kayıt</h2>
     </div>
 
     <!-- Hızlı Şablonlar -->
-    <div id="sablon-secici" style="margin-bottom:1rem;">
-      <span style="font-size:0.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase;">Hızlı Şablon:</span>
-      <div id="sablon-butonlar" class="cipler" style="margin-top:0.4rem;"></div>
+    <div id="sablon-secici" class="flex flex-col gap-1.5">
+      <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Hızlı Şablon Seçimi:</span>
+      <div id="sablon-butonlar" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar -mx-4 px-4 pb-1"></div>
     </div>
 
-    <form id="kayit-formu" novalidate>
-      <div class="form-box">
-        <div class="form-group">
-          <label for="f-baslik">Başlık *</label>
-          <input type="text" id="f-baslik" name="baslik" required placeholder="Ör: Muhasebe yazıcısı soluk basıyor">
-          <div id="benzer-oneriler" class="benzer-oneriler" style="display:none;"></div>
+    <form id="kayit-formu" novalidate class="flex flex-col gap-3.5">
+      <!-- Ana Form Kartı -->
+      <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-3 shadow-xs">
+        
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300" for="f-baslik">
+            Başlık <span class="text-red-500">*</span>
+          </label>
+          <input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm px-3.5 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 shadow-xs transition-all" id="f-baslik" name="baslik" required placeholder="Ör: Muhasebe yazıcısı soluk basıyor" type="text"/>
+          <div id="benzer-oneriler" class="benzer-oneriler mt-1" style="display:none;"></div>
         </div>
 
-        <div class="form-group">
-          <label for="f-kategori">Kategori *</label>
-          <select id="f-kategori" name="kategori" required>
-            <option value="">Seçiniz...</option>
-          </select>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300" for="f-kategori">
+            Kategori <span class="text-red-500">*</span>
+          </label>
+          <div class="relative">
+            <select class="w-full appearance-none bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm px-3.5 py-2.5 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 shadow-xs pr-10" id="f-kategori" name="kategori" required>
+              <option value="">Seçiniz...</option>
+            </select>
+            <span class="material-symbols-outlined absolute right-3 top-2.5 pointer-events-none text-slate-400 text-[20px]">expand_more</span>
+          </div>
         </div>
 
-        <div class="form-group">
-          <label for="f-belirti">Belirti *</label>
-          <textarea id="f-belirti" name="belirti" rows="3" required placeholder="Ne oluyordu? (ör: Sayfanın sol tarafı soluk)"></textarea>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300" for="f-belirti">
+            Belirti (Problem Tespiti) <span class="text-red-500">*</span>
+          </label>
+          <textarea class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 shadow-xs resize-none leading-relaxed" id="f-belirti" name="belirti" required placeholder="Ne oluyordu? (ör: Sayfanın sol tarafı soluk)" rows="3"></textarea>
         </div>
 
-        <div class="form-group">
-          <label for="f-cozum">Çözüm *</label>
-          <textarea id="f-cozum" name="cozum" rows="4" required placeholder="Ne yaptın? (ör: 1) Drum değişti 2) Sayaç sıfırlandı)"></textarea>
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300" for="f-cozum">
+            Uygulanan Çözüm <span class="text-red-500">*</span>
+          </label>
+          <textarea class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-sm p-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 shadow-xs resize-none leading-relaxed" id="f-cozum" name="cozum" required placeholder="Ne yaptın? (ör: 1) Drum değişti 2) Sayaç sıfırlandı)" rows="4"></textarea>
         </div>
       </div>
 
-      <!-- Ek Alanlar -->
-      <details id="ek-alanlar" class="form-box" style="cursor:pointer;">
-        <summary style="font-size:0.85rem; font-weight:700; color:var(--text-secondary); list-style:none; display:flex; justify-content:space-between; align-items:center;">
-          <span>Daha fazla alan (isteğe bağlı)</span>
-          <span class="material-symbols-outlined" style="font-size:18px;">tune</span>
+      <!-- Ek Alanlar Akordeon -->
+      <details id="ek-alanlar" class="group bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xs overflow-hidden">
+        <summary class="flex items-center justify-between p-3.5 cursor-pointer list-none select-none hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-blue-600 text-[18px]">tune</span>
+            <span class="text-xs font-bold text-slate-800 dark:text-slate-200">Daha Fazla Alan</span>
+          </div>
+          <span class="material-symbols-outlined text-slate-400 transition-transform duration-200 group-open:rotate-180">expand_more</span>
         </summary>
 
-        <div style="margin-top:0.85rem; display:flex; flex-direction:column; gap:0.85rem;">
-          <div class="form-group">
-            <label for="f-cihaz">Cihaz</label>
-            <input type="text" id="f-cihaz" name="cihaz" placeholder="Ör: Brother HL-L2350, Muhasebe">
+        <div class="p-3.5 pt-0 flex flex-col gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+            <div class="flex flex-col gap-1">
+              <label class="text-[11px] font-bold text-slate-500 uppercase" for="f-cihaz">Cihaz</label>
+              <input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs px-3 py-2 rounded-lg outline-none" id="f-cihaz" name="cihaz" placeholder="Ör: Brother HL-L2350, Muhasebe" type="text"/>
+            </div>
+            <div class="flex flex-col gap-1">
+              <label class="text-[11px] font-bold text-slate-500 uppercase" for="f-hataKodu">Hata Kodu</label>
+              <input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-red-600 dark:text-red-400 text-xs px-3 py-2 rounded-lg outline-none font-mono" id="f-hataKodu" name="hataKodu" placeholder="Ör: Drum End Soon" type="text"/>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label for="f-hataKodu">Hata Kodu</label>
-            <input type="text" id="f-hataKodu" name="hataKodu" placeholder="Ör: Drum End Soon, 0x0000011b">
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold text-slate-500 uppercase" for="f-sebep">Sebep</label>
+            <textarea class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs p-2.5 rounded-lg outline-none resize-none" id="f-sebep" name="sebep" placeholder="Sorunun asıl nedeni neydi?" rows="2"></textarea>
           </div>
 
-          <div class="form-group">
-            <label for="f-sebep">Sebep</label>
-            <textarea id="f-sebep" name="sebep" rows="2" placeholder="Sorunun asıl nedeni neydi?"></textarea>
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold text-slate-500 uppercase" for="f-etiketler">Etiketler</label>
+            <input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs px-3 py-2 rounded-lg outline-none" id="f-etiketler" name="etiketler" placeholder="Virgülle ayır: drum, soluk-baski, brother" type="text"/>
+            <div id="etiket-oneriler" class="etiket-oneriler flex flex-wrap gap-1 mt-1" style="display:none;"></div>
           </div>
 
-          <div class="form-group">
-            <label for="f-etiketler">Etiketler</label>
-            <input type="text" id="f-etiketler" name="etiketler" placeholder="Virgülle ayır: drum, soluk-baski, brother" autocomplete="off">
-            <div id="etiket-oneriler" class="etiket-oneriler" style="display:none; margin-top:0.4rem;"></div>
-          </div>
-
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem;">
-            <div class="form-group">
-              <label for="f-durum">Durum</label>
-              <select id="f-durum" name="durum">
-                <option value="Çözüldü">Çözüldü</option>
-                <option value="Geçici çözüm">Geçici çözüm</option>
-                <option value="Açık">Açık</option>
+          <div class="grid grid-cols-2 gap-2.5">
+            <div class="flex flex-col gap-1">
+              <label class="text-[11px] font-bold text-slate-500 uppercase" for="f-durum">Durum</label>
+              <select class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs px-3 py-2 rounded-lg outline-none" id="f-durum" name="durum">
+                <option value="Çözüldü">✅ Çözüldü</option>
+                <option value="Geçici çözüm">⚠️ Geçici çözüm</option>
+                <option value="Açık">🔴 Açık</option>
               </select>
             </div>
-            <div class="form-group">
-              <label for="f-sure">Süre (dakika)</label>
-              <input type="number" id="f-sure" name="sure" min="0" placeholder="Ör: 20">
+            <div class="flex flex-col gap-1">
+              <label class="text-[11px] font-bold text-slate-500 uppercase" for="f-sure">Süre (Dk)</label>
+              <input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs px-3 py-2 rounded-lg outline-none" id="f-sure" min="0" name="sure" placeholder="Ör: 20" type="number"/>
             </div>
           </div>
 
-          <div class="form-group">
-            <label for="f-kullaniciBolum">Kullanıcı / Bölüm</label>
-            <input type="text" id="f-kullaniciBolum" name="kullaniciBolum" placeholder="Ör: Ayşe H., Muhasebe">
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold text-slate-500 uppercase" for="f-kullaniciBolum">Kullanıcı / Bölüm</label>
+            <input class="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white text-xs px-3 py-2 rounded-lg outline-none" id="f-kullaniciBolum" name="kullaniciBolum" placeholder="Ör: Ayşe H., Muhasebe" type="text"/>
           </div>
 
-          <div class="form-group">
-            <label for="f-fotograf">Fotoğraf</label>
-            <input type="file" id="f-fotograf" accept="image/*" capture="environment">
-            <div id="fotograf-onizleme" style="display:none; margin-top:0.5rem;">
-              <img id="fotograf-img" style="max-width:100%; border-radius:0.5rem;" alt="Önizleme">
-              <button type="button" id="btn-fotograf-sil" class="btn-secondary btn-danger" style="margin-top:0.4rem;">Fotoğrafı kaldır</button>
+          <div class="flex flex-col gap-1">
+            <label class="text-[11px] font-bold text-slate-500 uppercase">Fotoğraf Ekle</label>
+            <input class="text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" id="f-fotograf" accept="image/*" capture="environment" type="file"/>
+            <div id="fotograf-onizleme" style="display:none;" class="mt-2 flex items-center gap-2">
+              <img id="fotograf-img" class="w-16 h-16 object-cover rounded-lg border border-slate-200" alt="Önizleme"/>
+              <button class="text-xs text-red-600 font-semibold hover:underline" id="btn-fotograf-sil" type="button">Kaldır</button>
             </div>
           </div>
         </div>
       </details>
 
-      <button type="submit" id="btn-kaydet" class="btn-primary" style="margin-top:0.5rem;">
-        <span class="material-symbols-outlined">save</span>
-        <span>Kaydet</span>
+      <button id="btn-kaydet" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-headline font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-all" type="submit">
+        <span class="material-symbols-outlined text-[18px]">save</span>
+        <span>Kaydet ve Çözüm Defterine Ekle</span>
       </button>
     </form>
   </main>
 
-  <!-- ===== EKRAN 3: DETAY EKRANI ===== -->
-  <main id="ekran-detay" class="ekran">
-    <div style="margin-bottom:1rem;">
-      <button id="btn-detay-geri" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
-        <span>Geri</span>
+  <!-- ===== EKRAN 3: KAYIT DETAY ===== -->
+  <main id="ekran-detay" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-3.5">
+    <div class="flex items-center justify-between pt-1">
+      <button id="btn-detay-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
+        <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
+        <span>Kayıtlara Dön</span>
       </button>
     </div>
 
-    <article id="detay-icerik"></article>
+    <!-- Detay İçeriği JS ile doldurulur -->
+    <article id="detay-icerik" class="flex flex-col gap-3"></article>
 
-    <div class="detay-butonlar">
-      <button id="btn-tekrar" class="btn-primary">
-        <span class="material-symbols-outlined">sync</span>
-        <span>Bu yine oldu</span>
-      </button>
-      <button id="btn-sabitle" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">push_pin</span>
-        <span>Sabitle</span>
-      </button>
-    </div>
-
-    <div class="detay-butonlar" style="margin-top:0.5rem;">
-      <button id="btn-duzenle" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">edit</span>
-        <span>Düzenle</span>
-      </button>
-      <button id="btn-yazdir" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">print</span>
-        <span>Yazdır</span>
-      </button>
-      <button id="btn-sil" class="btn-secondary btn-danger">
-        <span class="material-symbols-outlined" style="font-size:18px;">delete</span>
-        <span>Sil</span>
-      </button>
+    <!-- Aksiyon Butonları -->
+    <div class="flex flex-col gap-2 pt-2">
+      <div class="grid grid-cols-5 gap-2">
+        <button id="btn-tekrar" class="col-span-3 h-11 flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 text-white text-xs font-bold active:scale-95 transition-all shadow-sm">
+          <span class="material-symbols-outlined text-[18px]">sync</span>
+          <span>Bu yine oldu</span>
+        </button>
+        <button id="btn-sabitle" class="col-span-2 h-11 flex items-center justify-center gap-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold active:scale-95 transition-all shadow-xs">
+          <span class="material-symbols-outlined text-[18px] text-amber-500">push_pin</span>
+          <span>Sabitle</span>
+        </button>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <button id="btn-duzenle" class="h-9 flex items-center justify-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold active:scale-95">
+          <span class="material-symbols-outlined text-[15px]">edit</span>
+          <span>Düzenle</span>
+        </button>
+        <button id="btn-yazdir" class="h-9 flex items-center justify-center gap-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold active:scale-95">
+          <span class="material-symbols-outlined text-[15px]">print</span>
+          <span>Yazdır</span>
+        </button>
+        <button id="btn-sil" class="h-9 flex items-center justify-center gap-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 text-xs font-semibold active:scale-95">
+          <span class="material-symbols-outlined text-[15px]">delete</span>
+          <span>Sil</span>
+        </button>
+      </div>
     </div>
   </main>
 
-  <!-- ===== EKRAN 4: İSTATİSTİK ===== -->
-  <main id="ekran-istatistik" class="ekran">
-    <div style="margin-bottom:1rem;">
-      <button id="btn-istatistik-geri" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+  <!-- ===== EKRAN 4: İSTATİSTİKLER ===== -->
+  <main id="ekran-istatistik" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+    <div class="flex items-center justify-between pt-1">
+      <button id="btn-istatistik-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
+        <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
         <span>Geri</span>
       </button>
     </div>
 
-    <div class="hero-box" style="margin-bottom:1.2rem;">
-      <div>
-        <h1 style="font-size:1.35rem;">İstatistikler</h1>
-        <p>Arıza ve çözüm genel analizi</p>
-      </div>
+    <div>
+      <h1 class="font-headline text-lg font-bold text-slate-900 dark:text-white">İstatistikler</h1>
+      <p class="text-xs text-slate-500">Arıza ve çözüm genel analiz raporu</p>
     </div>
 
-    <div id="ist-ozet" class="ist-ozet"></div>
+    <!-- 4'lü Metrik Grid -->
+    <div id="ist-ozet" class="grid grid-cols-2 gap-2.5"></div>
 
-    <div class="form-box">
-      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">Kategoriye Göre</h3>
-      <div id="ist-kategori"></div>
+    <!-- Kategoriye Göre -->
+    <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-3 shadow-xs">
+      <h2 class="font-headline text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-blue-600 text-[16px]">category</span>
+        <span>Kategoriye Göre Dağılım</span>
+      </h2>
+      <div id="ist-kategori" class="flex flex-col gap-2"></div>
     </div>
 
-    <div class="form-box">
-      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">Duruma Göre</h3>
-      <div id="ist-durum"></div>
+    <!-- Duruma Göre -->
+    <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-3 shadow-xs">
+      <h2 class="font-headline text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-emerald-600 text-[16px]">donut_large</span>
+        <span>Duruma Göre Dağılım</span>
+      </h2>
+      <div id="ist-durum" class="flex flex-col gap-2"></div>
     </div>
 
-    <div class="form-box">
-      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">En Çok Tekrar Eden</h3>
-      <div id="ist-tekrar"></div>
+    <!-- En Çok Tekrar Eden -->
+    <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-3 shadow-xs">
+      <h2 class="font-headline text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-amber-500 text-[16px]">radar</span>
+        <span>En Çok Tekrar Eden Sorunlar</span>
+      </h2>
+      <div id="ist-tekrar" class="flex flex-col gap-1.5"></div>
     </div>
 
-    <div class="form-box">
-      <h3 style="font-size:0.9rem; font-weight:800; color:var(--text-primary); margin-bottom:0.75rem;">Aylık Kayıt Sayısı</h3>
-      <div id="ist-aylik"></div>
+    <!-- Aylık Kayıt -->
+    <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-3 shadow-xs">
+      <h2 class="font-headline text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-blue-600 text-[16px]">stacked_bar_chart</span>
+        <span>Aylık Kayıt Sayısı</span>
+      </h2>
+      <div id="ist-aylik" class="flex flex-col gap-2"></div>
     </div>
   </main>
 
   <!-- ===== EKRAN 5: AYARLAR ===== -->
-  <main id="ekran-ayarlar" class="ekran">
-    <div style="margin-bottom:1rem;">
-      <button id="btn-ayarlar-geri" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">arrow_back</span>
+  <main id="ekran-ayarlar" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+    <div class="flex items-center justify-between pt-1">
+      <button id="btn-ayarlar-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
+        <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
         <span>Geri</span>
       </button>
     </div>
 
-    <h1 style="font-size:1.35rem; font-weight:800; margin-bottom:1rem;">Ayarlar</h1>
+    <h1 class="font-headline text-lg font-bold text-slate-900 dark:text-white">Ayarlar</h1>
 
-    <div class="form-box">
-      <h3 style="font-size:0.9rem; font-weight:700;">Görünüm</h3>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.5rem;">Karanlık ve aydınlık tema arasında geçiş yapın.</p>
-      <button id="btn-tema-ayar" class="btn-secondary">
-        <span class="material-symbols-outlined" style="font-size:18px;">dark_mode</span>
-        <span>Karanlık Tema</span>
-      </button>
+    <!-- Görünüm Kartı -->
+    <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-3 shadow-xs">
+      <div class="flex items-center justify-between">
+        <div>
+          <h2 class="text-sm font-bold text-slate-900 dark:text-white">Görünüm Modu</h2>
+          <p class="text-xs text-slate-500">Aydınlık veya karanlık tema seçimi</p>
+        </div>
+        <button id="btn-tema-ayar" class="px-3.5 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold shadow-xs active:scale-95 transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">dark_mode</span>
+          <span>Karanlık Tema</span>
+        </button>
+      </div>
     </div>
 
-    <div class="form-box">
-      <h3 style="font-size:0.9rem; font-weight:700;">Yedekleme</h3>
-      <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:0.75rem;">Kayıtlarını JSON veya CSV olarak dışa aktar ya da yedeği geri yükle.</p>
-
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; margin-bottom:1rem;">
-        <button id="btn-disa-aktar" class="btn-secondary" style="justify-content:center;">JSON Dışa Aktar</button>
-        <button id="btn-csv-aktar" class="btn-secondary" style="justify-content:center;">CSV Dışa Aktar</button>
+    <!-- Yedekleme Kartı -->
+    <div class="bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl flex flex-col gap-3 shadow-xs">
+      <div>
+        <h2 class="text-sm font-bold text-slate-900 dark:text-white">Yedekleme & Arşiv</h2>
+        <p class="text-xs text-slate-500">Kayıtlarınızı JSON veya CSV olarak dışa aktarın ya da yedeği yükleyin.</p>
       </div>
 
-      <div style="border-top:1px solid var(--border-color); padding-top:1rem;">
-        <h4 style="font-size:0.85rem; font-weight:700; margin-bottom:0.5rem;">İçe Aktar</h4>
-        <input type="file" id="f-yedek-dosya" accept=".json,.csv" style="margin-bottom:0.75rem;">
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btn-disa-aktar" class="py-2.5 px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-blue-600 dark:text-blue-400 font-bold text-xs shadow-xs active:scale-95 flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">file_download</span>
+          <span>JSON İndir</span>
+        </button>
+        <button id="btn-csv-aktar" class="py-2.5 px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs shadow-xs active:scale-95 flex items-center justify-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">table_view</span>
+          <span>CSV İndir</span>
+        </button>
+      </div>
 
-        <div style="display:flex; flex-direction:column; gap:0.4rem; margin-bottom:0.75rem; font-size:0.85rem;">
-          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
-            <input type="radio" name="ice-aktar-mod" value="birlestir" checked>
-            <span>Birleştir (mevcut kayıtların üstüne ekle)</span>
+      <div class="border-t border-slate-200 dark:border-slate-700 pt-3 flex flex-col gap-2.5">
+        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">Yedekten Geri Yükle</span>
+        <input class="text-xs text-slate-500 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700" id="f-yedek-dosya" accept=".json,.csv" type="file"/>
+
+        <div class="flex flex-col gap-1.5 text-xs text-slate-600 dark:text-slate-400">
+          <label class="flex items-center gap-1.5 cursor-pointer">
+            <input type="radio" name="ice-aktar-mod" value="birlestir" checked class="accent-blue-600"/>
+            <span>Birleştir (Mevcut kayıtların üstüne ekle)</span>
           </label>
-          <label style="display:flex; align-items:center; gap:0.4rem; cursor:pointer;">
-            <input type="radio" name="ice-aktar-mod" value="uzerineYaz">
-            <span style="color:var(--badge-red-text);">Üzerine yaz (önce sil, sonra yükle)</span>
+          <label class="flex items-center gap-1.5 cursor-pointer text-red-600 dark:text-red-400 font-semibold">
+            <input type="radio" name="ice-aktar-mod" value="uzerineYaz" class="accent-red-600"/>
+            <span>Üzerine yaz (Önce tüm veriyi sil, sonra yükle)</span>
           </label>
         </div>
 
-        <button id="btn-ice-aktar" class="btn-primary">İçe Aktar</button>
-        <div id="yedek-sonuc" style="margin-top:0.75rem; font-size:0.82rem;"></div>
+        <button id="btn-ice-aktar" class="w-full py-2.5 px-3 rounded-xl bg-blue-600 text-white font-bold text-xs shadow-xs active:scale-95 flex items-center justify-center gap-1">
+          <span class="material-symbols-outlined text-[16px]">upload</span>
+          <span>Yedeği İçe Aktar</span>
+        </button>
+        <div id="yedek-sonuc" class="text-xs"></div>
       </div>
     </div>
   </main>
 
   <!-- ===== ALT NAVİGASYON BARI ===== -->
-  <nav id="alt-bar" class="app-bottom-bar">
-    <div class="bottom-bar-content">
-      <button class="alt-bar-btn aktif" data-ekran="ekran-liste" id="bar-ana">
-        <span class="material-symbols-outlined">home</span>
-        <span>Ana Sayfa</span>
+  <nav id="alt-bar" class="fixed bottom-0 w-full max-w-[600px] z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 pb-safe">
+    <div class="flex justify-around items-center h-16 px-1">
+      <button class="alt-bar-btn aktif flex flex-col items-center justify-center gap-1 w-16 h-14 text-slate-400 active:scale-95 transition-transform" data-ekran="ekran-liste" id="bar-ana">
+        <span class="material-symbols-outlined text-[22px]">home</span>
+        <span class="text-[11px] font-semibold">Ana Sayfa</span>
       </button>
-      <button class="alt-bar-btn" data-ekran="ekran-form" id="bar-yeni">
-        <span class="material-symbols-outlined">add_circle</span>
-        <span>Yeni Kayıt</span>
+      <button class="alt-bar-btn flex flex-col items-center justify-center gap-1 w-16 h-14 text-slate-400 active:scale-95 transition-transform" data-ekran="ekran-form" id="bar-yeni">
+        <span class="material-symbols-outlined text-[22px]">add_circle</span>
+        <span class="text-[11px] font-semibold">Yeni Kayıt</span>
       </button>
-      <button class="alt-bar-btn" data-ekran="ekran-istatistik" id="bar-istatistik">
-        <span class="material-symbols-outlined">bar_chart</span>
-        <span>İstatistik</span>
+      <button class="alt-bar-btn flex flex-col items-center justify-center gap-1 w-16 h-14 text-slate-400 active:scale-95 transition-transform" data-ekran="ekran-istatistik" id="bar-istatistik">
+        <span class="material-symbols-outlined text-[22px]">bar_chart</span>
+        <span class="text-[11px] font-semibold">İstatistik</span>
       </button>
-      <button class="alt-bar-btn" data-ekran="ekran-ayarlar" id="bar-ayarlar">
-        <span class="material-symbols-outlined">settings</span>
-        <span>Ayarlar</span>
+      <button class="alt-bar-btn flex flex-col items-center justify-center gap-1 w-16 h-14 text-slate-400 active:scale-95 transition-transform" data-ekran="ekran-ayarlar" id="bar-ayarlar">
+        <span class="material-symbols-outlined text-[22px]">settings</span>
+        <span class="text-[11px] font-semibold">Ayarlar</span>
       </button>
     </div>
   </nav>
