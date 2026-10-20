@@ -274,15 +274,30 @@ function kartOlustur(kayit) {
     ? '<span class="durum-badge durum-acik">Açık</span>'
     : kayit.durum === 'Geçici çözüm'
     ? '<span class="durum-badge durum-gecici">Geçici</span>'
-    : '';
+    : '<span class="durum-badge durum-cozuldu">Çözüldü</span>';
+
+  const onizleme = kayit.belirti || kayit.cozum || '';
+
+  const etiketler = [];
+  if (kayit.cihaz) etiketler.push(`<span class="kart-etiket"><span class="material-symbols-outlined" style="font-size:11px">devices</span>${htmlKacis(kayit.cihaz)}</span>`);
+  if (Array.isArray(kayit.etiketler)) {
+    kayit.etiketler.slice(0, 2).forEach(e => {
+      etiketler.push(`<span class="kart-etiket"><span class="material-symbols-outlined" style="font-size:11px">label</span>${htmlKacis(e)}</span>`);
+    });
+  }
 
   div.innerHTML = `
-    <h4>${htmlKacis(kayit.baslik)}</h4>
     <div class="meta">
-      <span>${tarihFormatla(kayit.tarih)}</span>
       ${durumBadge}
-      ${kayit.tekrarSayisi > 1 ? `<span class="tekrar-badge">${kayit.tekrarSayisi}x tekrar</span>` : ''}
+      ${kayit.tekrarSayisi > 1 ? `<span class="tekrar-badge">🔄 ${kayit.tekrarSayisi}x</span>` : ''}
+      <span>${tarihFormatla(kayit.tarih)}</span>
     </div>
+    <div class="kart-baslik-satir">
+      <h4>${htmlKacis(kayit.baslik)}</h4>
+      <span class="kart-chevron"><span class="material-symbols-outlined" style="font-size:14px">chevron_right</span></span>
+    </div>
+    ${onizleme ? `<div class="kart-onizleme">${htmlKacis(onizleme)}</div>` : ''}
+    ${etiketler.length ? `<div class="kart-etiketler">${etiketler.join('')}</div>` : ''}
   `;
 
   div.addEventListener('click', () => detayGoster(kayit.id));
