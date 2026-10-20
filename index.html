@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html class="light" lang="tr">
+<html lang="tr">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"/>
-  <title>Çözüm Defteri</title>
+  <title>İş-Takip</title>
 
   <!-- PWA -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1d4ed8">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="Çözüm Defteri">
+  <meta name="apple-mobile-web-app-title" content="İş-Takip">
   <link rel="apple-touch-icon" href="icons/icon-192.svg">
 
   <!-- Stitch Fontları: Space Grotesk + Manrope -->
@@ -84,15 +84,15 @@
 <div class="w-full max-w-[600px] min-h-screen flex flex-col relative bg-white dark:bg-slate-900 shadow-xl">
 
   <!-- ===== ÜST SABİT HEADER ===== -->
-  <header class="fixed top-0 w-full max-w-[600px] z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 pt-safe">
+  <header class="sticky top-0 w-full z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 pt-safe">
     <div class="h-14 px-4 flex items-center justify-between">
       <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shadow-sm">
           <span class="material-symbols-outlined text-[19px]">terminal</span>
         </div>
         <div class="flex flex-col">
-          <span class="font-headline text-[1.1rem] font-bold tracking-tight text-slate-900 dark:text-white leading-none">Çözüm Defteri</span>
-          <span class="text-[10px] font-semibold text-blue-600 dark:text-blue-400 tracking-wider uppercase mt-0.5">Saha Günlüğü</span>
+          <span class="font-headline text-[1.1rem] font-bold tracking-tight text-slate-900 dark:text-white leading-none">İş-Takip</span>
+          <span class="text-[10px] font-semibold text-blue-600 dark:text-blue-400 tracking-wider uppercase mt-0.5">Arıza & Çözüm Kaydı</span>
         </div>
       </div>
       <button id="btn-tema" class="w-9 h-9 flex items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 active:scale-95 transition-all" aria-label="Tema Değiştir">
@@ -102,13 +102,13 @@
   </header>
 
   <!-- ===== EKRAN 1: ANA SAYFA (LİSTE & ARAMA) ===== -->
-  <main id="ekran-liste" class="ekran aktif flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+  <main id="ekran-liste" class="ekran aktif flex-1 flex-col px-4 pt-3 pb-4 gap-4">
     
     <!-- Hero & Sayaç -->
     <div class="flex items-center justify-between pt-2">
       <div>
-        <h1 class="font-headline text-[1.35rem] font-bold text-slate-900 dark:text-white tracking-tight">Çözüm Defteri</h1>
-        <p class="text-xs text-slate-500 dark:text-slate-400">Çözülen sorunları kaydet, kolayca bul</p>
+        <h1 class="font-headline text-[1.35rem] font-bold text-slate-900 dark:text-white tracking-tight">İş-Takip</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400">Arıza ve çözüm kayıtlarını yönet</p>
       </div>
       <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-900 text-blue-700 dark:text-blue-300 text-xs font-semibold shadow-xs">
         <span class="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse"></span>
@@ -145,7 +145,7 @@
   </main>
 
   <!-- ===== EKRAN 2: YENİ KAYIT / DÜZENLE ===== -->
-  <main id="ekran-form" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+  <main id="ekran-form" class="ekran flex-1 flex-col px-4 pt-3 pb-4 gap-4">
     <div class="flex items-center justify-between pt-1">
       <button id="btn-form-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
         <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
@@ -265,13 +265,13 @@
 
       <button id="btn-kaydet" class="w-full py-3.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-headline font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-all" type="submit">
         <span class="material-symbols-outlined text-[18px]">save</span>
-        <span>Kaydet ve Çözüm Defterine Ekle</span>
+        <span>Kaydet</span>
       </button>
     </form>
   </main>
 
   <!-- ===== EKRAN 3: KAYIT DETAY ===== -->
-  <main id="ekran-detay" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-3.5">
+  <main id="ekran-detay" class="ekran flex-1 flex-col px-4 pt-3 pb-4 gap-3.5">
     <div class="flex items-center justify-between pt-1">
       <button id="btn-detay-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
         <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
@@ -312,7 +312,7 @@
   </main>
 
   <!-- ===== EKRAN 4: İSTATİSTİKLER ===== -->
-  <main id="ekran-istatistik" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+  <main id="ekran-istatistik" class="ekran flex-1 flex-col px-4 pt-3 pb-4 gap-4">
     <div class="flex items-center justify-between pt-1">
       <button id="btn-istatistik-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
         <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
@@ -366,7 +366,7 @@
   </main>
 
   <!-- ===== EKRAN 5: AYARLAR ===== -->
-  <main id="ekran-ayarlar" class="ekran flex-1 flex-col px-4 pt-16 pb-24 gap-4">
+  <main id="ekran-ayarlar" class="ekran flex-1 flex-col px-4 pt-3 pb-4 gap-4">
     <div class="flex items-center justify-between pt-1">
       <button id="btn-ayarlar-geri" class="btn-geri inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 text-xs font-semibold transition-all shadow-xs">
         <span class="material-symbols-outlined text-[16px] text-blue-600">arrow_back</span>
@@ -433,7 +433,7 @@
   </main>
 
   <!-- ===== ALT NAVİGASYON BARI ===== -->
-  <nav id="alt-bar" class="fixed bottom-0 w-full max-w-[600px] z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 pb-safe">
+  <nav id="alt-bar" class="sticky bottom-0 w-full z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-t border-slate-200/80 dark:border-slate-800 pb-safe">
     <div class="flex justify-around items-center h-16 px-1">
       <button class="alt-bar-btn aktif flex flex-col items-center justify-center gap-1 w-16 h-14 text-slate-400 active:scale-95 transition-transform" data-ekran="ekran-liste" id="bar-ana">
         <span class="material-symbols-outlined text-[22px]">home</span>

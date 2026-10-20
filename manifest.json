@@ -1,7 +1,7 @@
 {
-  "name": "Çözüm Defteri",
-  "short_name": "ÇözümDef",
-  "description": "IT sorunlarını kaydet, çözümlerini kolayca bul",
+  "name": "İş-Takip",
+  "short_name": "İş-Takip",
+  "description": "IT arıza ve çözüm kayıtlarını yönet",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
